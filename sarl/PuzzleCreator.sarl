@@ -101,7 +101,7 @@ agent PuzzleCreator {
 			else if(i > 0 && i < puzzleSize -1 ) // top line
 			{
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
-				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
+				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1)) 
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
 	
