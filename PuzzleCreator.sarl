@@ -137,8 +137,8 @@ agent PuzzleCreator {
 				if (tileNumber == puzzleSize - 1)
 				{
 //					startingSpaceId=tuileSquareSpace
-//					startingSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification), tuileSquareSpace )
-					startingSpace =  EventSpaceSpecification.create(tuileSquareSpace)
+					startingSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification), tuileSquareSpace )
+//					startingSpace =  EventSpaceSpecification.create(tuileSquareSpace)
 				}
 		
 				//spawn de la tuile blanche
