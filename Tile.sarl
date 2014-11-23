@@ -16,35 +16,42 @@ import java.util.UUID
 import io.sarl.lang.core.Space
 import java.util.List
 import java.util.ArrayList
+import io.sarl.lang.core.EventSpace
+import io.sarl.lang.core.EventSpaceSpecification
 
 agent ActiveTile {
     uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
     var placementNumber : Integer
-    var space : OpenEventSpace
+    var tileSquareSpace : OpenEventSpace
     var isSatisfed : Boolean
+     
     //on wich square Active tile is
-    def setPlacement(p_placement : Integer) {
-        placementNumber = p_placement
-    }
 
     on Initialize {
     //get the number from parameters
         placementNumber = occurrence.parameters.get(0) as Integer
 
         //get the space from parameters
-        space = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification),
+        tileSquareSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification),
         occurrence.parameters.get(1) as UUID)
-        space.register(asEventListener())
+        tileSquareSpace.register(asEventListener()) 
+        
+        isSatisfed = false
 
         println("Active tile spawned with number" + placementNumber)
     }
-
-    //	on getMySquare {
-    //		println("Tile number :  " + occurrence.placementNumber)
-    //		var evt = new getMyTile(occurrence.placementNumber)
-    //		evt.source = space.getAddress(getID());
-    //		space.emit(evt)
-    //	}
+    
+    on SearchSatisfaction{ 
+//    	var squareNb : Integer
+    	var evt = new AskMySquareNumber() //define the event
+		evt.source = tileSquareSpace.getAddress(getID()) //define source 
+		tileSquareSpace.emit(evt) //emit the event in the space
+//		emit(new AskMySquareNumber(), Scopes.addresses(space))
+    }
+    
+    on SendMySquareNumber{
+    	println("From square number" + occurrence.squareNumber) 
+    }
 
 }
 
@@ -59,4 +66,5 @@ agent BlankTile {
 
         println("Blank tile spawned")
     }
+    
 }

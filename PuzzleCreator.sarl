@@ -16,23 +16,28 @@ import java.util.UUID
 import io.sarl.lang.core.Space
 import java.util.List
 import java.util.ArrayList
+import io.sarl.lang.core.EventSpace
+import io.sarl.lang.core.EventSpace
+import io.sarl.lang.core.EventSpaceSpecification
 
 agent PuzzleCreator {
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
 	var puzzleSize = 4
-	var squareSpace = UUID::randomUUID as Object
-	var tileSpace = UUID::randomUUID as Object
+	var squareSpace = UUID::randomUUID
+	var tileSpace = UUID::randomUUID 
 	var allTileNumbers = newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 	var tileNumber : Integer
-	var spaceSquareCenter = new ArrayList<Object>()
+	var spaceSquareCenter = new ArrayList<UUID>()
 	var rightColumn = new ArrayList<Integer>()
 	var leftColumn = new ArrayList<Integer>()
+	var startingSpaceId = UUID::randomUUID 
+	var startingSpace : OpenEventSpace 
 
 	on Initialize {
 
 		for(var i = 0; i <= (puzzleSize * puzzleSize) -1; i++) // -1 cause we start at 0
 		{
-			var uid = UUID::randomUUID as Object
+			var uid = UUID::randomUUID 
 			spaceSquareCenter.add(uid)
 		}
 	
@@ -46,13 +51,12 @@ agent PuzzleCreator {
 		for(var j : Integer = 2; j <= puzzleSize - 1; j++)
 		{
 			rightColumn.add(j * puzzleSize - 1)  
-			
 		}
 	
 		for(var i = 0; i < (puzzleSize * puzzleSize) ; i++)
 		{
-			var spaceToAddToSquareAgent = new ArrayList<Object>()
-			var tuileSquareSpace = UUID::randomUUID as Object 
+			var spaceToAddToSquareAgent = new ArrayList<UUID>()
+			var tuileSquareSpace = UUID::randomUUID  
 			println("avant if")
 			if(i == 0) //top left corner 
 			{
@@ -77,7 +81,7 @@ agent PuzzleCreator {
 			{
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1)) 
-				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
+				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))				
 			}
 			else if(leftColumn.contains(i)) // left column
 			{
@@ -86,7 +90,7 @@ agent PuzzleCreator {
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
 			}
-			else if(rightColumn.contains(i)) //right column
+			else if(rightColumn.contains(i)) //right column 
 			{
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
@@ -107,7 +111,6 @@ agent PuzzleCreator {
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
-	
 			} 
 			else
 			{
@@ -119,23 +122,45 @@ agent PuzzleCreator {
 			}
 	
 			//spawn de l'agent square
+			println("tuileSquareSpace!!!! " + tuileSquareSpace)
 			spawn(Square, i, tuileSquareSpace, spaceToAddToSquareAgent)
 	
 			if (allTileNumbers.size() > 0)
 			{
-			val random = new Random()
-			var randNumber : Integer
-			randNumber = random.nextInt(allTileNumbers.size())
-	
-			tileNumber = allTileNumbers.get(randNumber)
-			allTileNumbers.remove(tileNumber)
-	
-			//spawn de l'agent tuile 
-			spawn(ActiveTile, tileNumber, tuileSquareSpace)
+				val random = new Random()
+				var randNumber : Integer
+				randNumber = random.nextInt(allTileNumbers.size())
+		
+				tileNumber = allTileNumbers.get(randNumber)
+				allTileNumbers.remove(tileNumber)
+				
+				if (tileNumber == puzzleSize - 1)
+				{
+//					startingSpaceId=tuileSquareSpace
+//					startingSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification), tuileSquareSpace )
+					startingSpace =  EventSpaceSpecification.create(tuileSquareSpace)
+				}
+		
+				//spawn de la tuile blanche
+				if (allTileNumbers.size() == 1)
+				{
+					spawn(BlankTile, tuileSquareSpace) 
+				}
+				else //spawn de l'agent tuile 
+				{
+					spawn(ActiveTile, tileNumber, tuileSquareSpace)
+				}
 			}
 		}
+		 
+//		var space = UUID::randomUUID 
+//		spawn(Square, puzzleSize*puzzleSize-1, space) 
 		
-		var space = UUID::randomUUID as Object spawn(Square, 16, space) spawn(BlankTile, space) 
+		var evt = new SearchSatisfaction()
+		startingSpace.unregister(asEventListener())
+//		evt.source = startingSpace.getAddress(getID()); 
+		startingSpace.emit(evt)
+		
 		killMe //kill de l'agent puzzle creator
 
 	}

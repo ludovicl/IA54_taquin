@@ -16,23 +16,38 @@ import java.util.UUID
 import io.sarl.lang.core.Space
 import java.util.List
 import java.util.ArrayList
+import io.sarl.lang.core.EventSpace
+import io.sarl.lang.core.EventSpaceSpecification
 
 agent Square {
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
 	var placementNumber : Integer
-	var space : OpenEventSpace
-	var spaceToAddToSquareAgent : Object [] //= new ArrayList<Object>()
+	var tileSquareSpace : OpenEventSpace // openEvent => tile may be register or unregister on that space
+	var squareSpace = new ArrayList<EventSpace>() // that eventspace will never change
+	
 	on Initialize {
 	//get the number from parameters
 		placementNumber = occurrence.parameters.get(0) as Integer
-
+ 
 		//get the space from parameters
-		space = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification),
+		tileSquareSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification),
 		occurrence.parameters.get(1) as UUID)
-		space.register(asEventListener())
-		spaceToAddToSquareAgent = new ArrayList<Object>(occurrence.parameters.clone())
+		tileSquareSpace.register(asEventListener())
 
-		println("spaceToAddToSquareAgent" + spaceToAddToSquareAgent.size())
+		var squareSpaceId = new ArrayList<UUID>(occurrence.parameters.get(2) as ArrayList<UUID>)
+//		squareSpace = new ArrayList<Object>()
+	
+		for (var i : Integer = 0 ; i< squareSpaceId.size(); i++) 
+		{ 
+			squareSpace.add(defaultContext.getOrCreateSpace(typeof(EventSpaceSpecification),
+					squareSpaceId.get(i) ))
+		}
+
+
+		println("spaceToAddToSquareAgent" + squareSpace.size())
+		
+		
+		
 		//        spaceToAddToSquareAgent = occurrence.parameters.clone() as ArrayList<Object>
 		//        spaceToAddToSquareAgent = occurrence.parameters.get(2) as ArrayList<Object>
 		println("Square spawned with number" + placementNumber)
@@ -45,7 +60,14 @@ agent Square {
 			//		evt.source = space.getAddress(getID());
 			//		space.emit(evt) 
 			//	}
-
-		}
+	}
+	
+	on AskMySquareNumber 
+	{
+    	var evt = new SendMySquareNumber(placementNumber)
+		evt.source = tileSquareSpace.getAddress(getID())
+		tileSquareSpace.emit(evt)
+	}
+		
 }
 	

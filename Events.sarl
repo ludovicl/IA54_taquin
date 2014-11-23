@@ -16,9 +16,24 @@ import java.util.UUID
 import io.sarl.lang.core.Space
 import java.util.List
 import java.util.ArrayList
-
-event getMySquare {
+ 
+event SearchSatisfaction {
+	
+	
 }
 
-event getMyTile {
+event AskMySquareNumber {
+
+	
 }
+
+event SendMySquareNumber {
+	val squareNumber : Integer
+	
+	new (nb : Integer)
+	{
+		squareNumber = nb
+	}
+	
+}
+
