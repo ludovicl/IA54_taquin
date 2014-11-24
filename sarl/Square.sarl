@@ -19,47 +19,22 @@ import java.util.ArrayList
 import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpaceSpecification
 
-agent Square {
+agent Square { 
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
 	var placementNumber : Integer
-	var tileSquareSpace : OpenEventSpace // openEvent => tile may be register or unregister on that space
+	var tileSquareSpace : OpenEventSpace // openEvent => tile may be register or unregister from that space
 	var squareSpace = new ArrayList<EventSpace>() // that eventspace will never change
 	
-	on Initialize {
-	//get the number from parameters
+	on Initialize { 
+	
 		placementNumber = occurrence.parameters.get(0) as Integer
- 
-		//get the space from parameters
-		tileSquareSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification),
-		occurrence.parameters.get(1) as UUID)
+		tileSquareSpace = occurrence.parameters.get(1) as OpenEventSpace
+		squareSpace = new ArrayList<EventSpace>(occurrence.parameters.get(2) as ArrayList<EventSpace>)
+				
 		tileSquareSpace.register(asEventListener())
 
-		var squareSpaceId = new ArrayList<UUID>(occurrence.parameters.get(2) as ArrayList<UUID>)
-//		squareSpace = new ArrayList<Object>()
-	
-		for (var i : Integer = 0 ; i< squareSpaceId.size(); i++) 
-		{ 
-			squareSpace.add(defaultContext.getOrCreateSpace(typeof(EventSpaceSpecification),
-					squareSpaceId.get(i) ))
-		}
-
-
-		println("spaceToAddToSquareAgent" + squareSpace.size())
-		
-		
-		
-		//        spaceToAddToSquareAgent = occurrence.parameters.clone() as ArrayList<Object>
-		//        spaceToAddToSquareAgent = occurrence.parameters.get(2) as ArrayList<Object>
+		println("spaceToAddToSquareAgent" + squareSpace.size())	// size => from 2 to 5
 		println("Square spawned with number" + placementNumber)
-
-
-			//	on getMySquare { 
-			//		println("Square number :  " + occurrence.placementNumber) 
-			//
-			//		var evt = new getMyTile(occurrence.placementNumber)
-			//		evt.source = space.getAddress(getID());
-			//		space.emit(evt) 
-			//	}
 	}
 	
 	on AskMySquareNumber 

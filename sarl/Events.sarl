@@ -7,7 +7,7 @@ import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
 //import ia54.project.taquin.PuzzleConstant
-import io.sarl.util.OpenEventSpace
+import io.sarl.util.OpenEventSpace 
 import io.sarl.util.OpenEventSpaceSpecification
 import java.util.Random
 import java.util.Collection

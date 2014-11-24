@@ -25,43 +25,33 @@ agent ActiveTile {
     var tileSquareSpace : OpenEventSpace
     var isSatisfed : Boolean
      
-    //on wich square Active tile is
-
     on Initialize {
-    //get the number from parameters
         placementNumber = occurrence.parameters.get(0) as Integer
-
-        //get the space from parameters
-        tileSquareSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification),
-        occurrence.parameters.get(1) as UUID)
-        tileSquareSpace.register(asEventListener()) 
-        
+        tileSquareSpace = occurrence.parameters.get(1) as OpenEventSpace
+        tileSquareSpace.register(asEventListener())
         isSatisfed = false
 
         println("Active tile spawned with number" + placementNumber)
     }
     
     on SearchSatisfaction{ 
-//    	var squareNb : Integer
     	var evt = new AskMySquareNumber() //define the event
 		evt.source = tileSquareSpace.getAddress(getID()) //define source 
 		tileSquareSpace.emit(evt) //emit the event in the space
-//		emit(new AskMySquareNumber(), Scopes.addresses(space))
     }
     
     on SendMySquareNumber{
-    	println("From square number" + occurrence.squareNumber) 
-    }
-
+    	println("I am tile number " + placementNumber + " and my square is " + occurrence.squareNumber) 
+    } 
+    
 }
-
+ 
 agent BlankTile {
     uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
     var space : OpenEventSpace
 
     on Initialize {
-        space = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification),
-        occurrence.parameters.get(0) as UUID)
+        space = occurrence.parameters.get(0) as OpenEventSpace
         space.register(asEventListener())
 
         println("Blank tile spawned")

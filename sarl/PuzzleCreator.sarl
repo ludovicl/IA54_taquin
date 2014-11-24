@@ -3,7 +3,7 @@ package ia54.project.taquin
 import io.sarl.core.Behaviors
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.ExternalContextAccess
-import io.sarl.core.Initialize
+import io.sarl.core.Initialize 
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
 //import ia54.project.taquin.PuzzleConstant
@@ -19,26 +19,33 @@ import java.util.ArrayList
 import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpaceSpecification
+import io.sarl.lang.core.EventListener
 
 agent PuzzleCreator {
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
 	var puzzleSize = 4
 	var squareSpace = UUID::randomUUID
 	var tileSpace = UUID::randomUUID 
-	var allTileNumbers = newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+	var allTileNumbers = new ArrayList<Integer>() //newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 	var tileNumber : Integer
-	var spaceSquareCenter = new ArrayList<UUID>()
+	var spaceSquareCenter = new ArrayList<EventSpace>()
 	var rightColumn = new ArrayList<Integer>()
 	var leftColumn = new ArrayList<Integer>()
-	var startingSpaceId = UUID::randomUUID 
 	var startingSpace : OpenEventSpace 
 
 	on Initialize {
-
+		
+		//create an arraylist with all tile
+		for (var i = 0; i<puzzleSize*puzzleSize - 2; i++)
+		{
+			allTileNumbers.add(i)
+		}
+		
 		for(var i = 0; i <= (puzzleSize * puzzleSize) -1; i++) // -1 cause we start at 0
 		{
 			var uid = UUID::randomUUID 
-			spaceSquareCenter.add(uid)
+			var space = defaultContext.createSpace(typeof(OpenEventSpaceSpecification),uid)
+			spaceSquareCenter.add(space)
 		}
 	
 		//4 size puzzle => left column : 4, 8
@@ -55,9 +62,11 @@ agent PuzzleCreator {
 	
 		for(var i = 0; i < (puzzleSize * puzzleSize) ; i++)
 		{
-			var spaceToAddToSquareAgent = new ArrayList<UUID>()
-			var tuileSquareSpace = UUID::randomUUID  
-			println("avant if")
+			var spaceToAddToSquareAgent = new ArrayList<EventSpace>()
+			var tuileSquareSpace : OpenEventSpace  
+			tuileSquareSpace = defaultContext.createSpace(typeof(OpenEventSpaceSpecification), UUID::randomUUID ) 
+			
+			//in these if we create multiple space with square that are neighbour
 			if(i == 0) //top left corner 
 			{
 				println("dans i = 0")
@@ -121,47 +130,42 @@ agent PuzzleCreator {
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
 			}
 	
-			//spawn de l'agent square
-			println("tuileSquareSpace!!!! " + tuileSquareSpace)
+			//spawn of square agent
 			spawn(Square, i, tuileSquareSpace, spaceToAddToSquareAgent)
 	
 			if (allTileNumbers.size() > 0)
 			{
 				val random = new Random()
 				var randNumber : Integer
+				
 				randNumber = random.nextInt(allTileNumbers.size())
-		
 				tileNumber = allTileNumbers.get(randNumber)
 				allTileNumbers.remove(tileNumber)
 				
+				//we start the puzzle with tile 3
 				if (tileNumber == puzzleSize - 1)
 				{
-//					startingSpaceId=tuileSquareSpace
-					startingSpace = defaultContext.getOrCreateSpace(typeof(OpenEventSpaceSpecification), tuileSquareSpace )
-//					startingSpace =  EventSpaceSpecification.create(tuileSquareSpace)
+					startingSpace = tuileSquareSpace
+					startingSpace.register(asEventListener())					
 				}
-		
-				//spawn de la tuile blanche
+				
+				//spawn blank tile
 				if (allTileNumbers.size() == 1)
 				{
 					spawn(BlankTile, tuileSquareSpace) 
 				}
-				else //spawn de l'agent tuile 
+				else //spawn an active tile
 				{
 					spawn(ActiveTile, tileNumber, tuileSquareSpace)
 				}
 			}
 		}
-		 
-//		var space = UUID::randomUUID 
-//		spawn(Square, puzzleSize*puzzleSize-1, space) 
-		
+
 		var evt = new SearchSatisfaction()
-		startingSpace.unregister(asEventListener())
-//		evt.source = startingSpace.getAddress(getID()); 
-		startingSpace.emit(evt)
-		
-		killMe //kill de l'agent puzzle creator
+		evt.source = startingSpace.getAddress(getID()); 
+		startingSpace.emit(evt) 
+				
+		killMe //puzzle creator die
 
 	}
 
