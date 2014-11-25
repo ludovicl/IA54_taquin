@@ -27,7 +27,7 @@ agent PuzzleCreator {
 	var puzzleSize = 4
 	var squareSpace = UUID::randomUUID 
 	var tileSpace = UUID::randomUUID 
-	var allTileNumbers = new ArrayList<Integer>() //newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+	var allTileNumbers = new ArrayList<Integer>() 
 	var tileNumber : Integer
 	var spaceSquareCenter = new ArrayList<EventSpace>()
 	var rightColumn = new ArrayList<Integer>()
@@ -35,11 +35,9 @@ agent PuzzleCreator {
 	var startingSpace : OpenEventSpace 
   
 	on Initialize {
-		    
-//		println("MATRICE =" + SharedValues.getMatrix(0,0))     
-		
+		    		
 		//create an arraylist with all tile
-		for (var i = 0; i<puzzleSize*puzzleSize - 2; i++)
+		for (var i = 0; i<=puzzleSize*puzzleSize - 1; i++)
 		{
 			allTileNumbers.add(i)  
 		}
@@ -53,7 +51,7 @@ agent PuzzleCreator {
 	
 		//4 size puzzle => left column : 4, 8
 		for(var j : Integer = 1; j <= puzzleSize - 2; j++)
-		{
+		{ 
 			leftColumn.add(j * puzzleSize )
 		}
 	
@@ -174,9 +172,9 @@ agent PuzzleCreator {
 				{
 					spawn(ActiveTile, tileNumber, tuileSquareSpace)
 					
-					for (var x=0; x<puzzleSize; x++)
+					for (var y = 0; y<puzzleSize; y++)
 					{
-						for(var y=0; y<puzzleSize;y++)
+						for(var x=0; x<puzzleSize; x++)
 						{
 							if (y*puzzleSize+x == i)
 							{
@@ -187,14 +185,15 @@ agent PuzzleCreator {
 				}
 				
 				
-				for (var x = 0 ; x < puzzleSize ; x++)
+				for (var y = 0 ; y < puzzleSize ; y++)
 				{ 
-					for (var y = 0 ; y < puzzleSize ; y++)
+					for (var x = 0 ; x < puzzleSize ; x++)
 					{
 						print(SharedValues.getMatrix(x,y) + "|" )
 					}
-					println("");
-				}		
+					println("")
+				}
+				println("")	
 			}
 		}
 
