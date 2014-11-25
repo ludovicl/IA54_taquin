@@ -34,9 +34,9 @@ agent PuzzleCreator {
 	var leftColumn = new ArrayList<Integer>()
 	var startingSpace : OpenEventSpace 
   
-	on Initialize {    
-		SharedValues.setMatrix(0,0,1)    
-		println("MATRICE =" + SharedValues.getMatrix(0,0))    
+	on Initialize {
+		    
+//		println("MATRICE =" + SharedValues.getMatrix(0,0))     
 		
 		//create an arraylist with all tile
 		for (var i = 0; i<puzzleSize*puzzleSize - 2; i++)
@@ -63,14 +63,14 @@ agent PuzzleCreator {
 			rightColumn.add(j * puzzleSize - 1)  
 		}
 	
-		for(var i = 0; i < (puzzleSize * puzzleSize) ; i++)
+		for(var i = 0; i < (puzzleSize * puzzleSize); i++) 
 		{
 			var spaceToAddToSquareAgent = new ArrayList<EventSpace>()
 			var tuileSquareSpace : OpenEventSpace  
 			tuileSquareSpace = defaultContext.createSpace(typeof(OpenEventSpaceSpecification), UUID::randomUUID ) 
-			
+							
 			//in these if we create multiple space with square that are neighbour
-			if(i == 0) //top left corner 
+			if(i == 0) //top left corner  
 			{
 				println("dans i = 0")
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
@@ -96,7 +96,7 @@ agent PuzzleCreator {
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))				
 			}
 			else if(leftColumn.contains(i)) // left column
-			{
+			{  
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
@@ -116,7 +116,6 @@ agent PuzzleCreator {
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1)) 
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
-	
 			}
 			else if(i < puzzleSize * puzzleSize -1 && i > (puzzleSize * puzzleSize) - puzzleSize) // bottom line
 			{
@@ -145,6 +144,8 @@ agent PuzzleCreator {
 				tileNumber = allTileNumbers.get(randNumber)
 				allTileNumbers.remove(tileNumber)
 				
+			
+				
 				//we start the puzzle with tile 3
 				if (tileNumber == puzzleSize - 1)
 				{
@@ -155,12 +156,45 @@ agent PuzzleCreator {
 				//spawn blank tile
 				if (allTileNumbers.size() == 1)
 				{
-					spawn(BlankTile, tuileSquareSpace) 
+					spawn(BlankTile, tuileSquareSpace)
+					
+					for (var x=0; x<puzzleSize; x++)
+					{
+						for(var y=0; y<puzzleSize;y++)
+						{
+							if (y*puzzleSize+x == i)
+							{
+								SharedValues.setMatrix(x,y,-1)
+							}
+						}
+					}
+					
 				}
 				else //spawn an active tile
 				{
 					spawn(ActiveTile, tileNumber, tuileSquareSpace)
+					
+					for (var x=0; x<puzzleSize; x++)
+					{
+						for(var y=0; y<puzzleSize;y++)
+						{
+							if (y*puzzleSize+x == i)
+							{
+								SharedValues.setMatrix(x,y,tileNumber)
+							}
+						}
+					}
 				}
+				
+				
+				for (var x = 0 ; x < puzzleSize ; x++)
+				{ 
+					for (var y = 0 ; y < puzzleSize ; y++)
+					{
+						print(SharedValues.getMatrix(x,y) + "|" )
+					}
+					println("");
+				}		
 			}
 		}
 
