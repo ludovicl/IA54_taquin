@@ -167,7 +167,16 @@ agent PuzzleCreator {
 		var evt = new SearchSatisfaction()
 		evt.source = startingSpace.getAddress(getID()); 
 		startingSpace.emit(evt) 
-				
+		
+		System.out.println("/nMatrice obtenue:/n/n");
+		
+		for (var i = 0 ; i < puzzleSize ; i++){
+			System.out.print("|/t");
+			for (var j = 0 ; j < puzzleSize ; j++){
+				System.out.print(SharedValues.getMatrix(i,j) + " |/t);
+			}
+		}
+		
 		killMe //puzzle creator die
 
 	}
