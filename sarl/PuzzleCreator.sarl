@@ -20,14 +20,37 @@ import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpaceSpecification
 import io.sarl.lang.core.EventListener
+import io.sarl.lang.core.Capacity
 import ia54.project.taquin.SharedValues
 
+capacity capMatrixManager
+{
+	def printMatrix(puzzleSize : Integer) : void
+}
+
+skill matrixManager implements capMatrixManager
+{
+	def printMatrix(puzzleSize : Integer) : void 
+	{ 
+		for (var y = 0 ; y < puzzleSize ; y++)
+		{ 
+			for (var x = 0 ; x < puzzleSize ; x++)
+			{
+				print(SharedValues.getMatrix(x,y) + "|" )
+			}
+			println("")
+		}
+	}
+}
+ 
+
 agent PuzzleCreator {
-	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
+	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager
+	
 	var puzzleSize = 4
 	var squareSpace = UUID::randomUUID 
-	var tileSpace = UUID::randomUUID 
-	var allTileNumbers = new ArrayList<Integer>() 
+	var tileSpace = UUID::randomUUID
+	var allTileNumbers = new ArrayList<Integer>()
 	var tileNumber : Integer
 	var spaceSquareCenter = new ArrayList<EventSpace>()
 	var rightColumn = new ArrayList<Integer>()
@@ -35,13 +58,15 @@ agent PuzzleCreator {
 	var startingSpace : OpenEventSpace 
   
 	on Initialize {
-		    		
+		  
+		setSkill(capMatrixManager, new matrixManager)
+		  		  
 		//create an arraylist with all tile
 		for (var i = 0; i<=puzzleSize*puzzleSize - 1; i++)
 		{
 			allTileNumbers.add(i)  
 		}
-		
+		 
 		for(var i = 0; i <= (puzzleSize * puzzleSize) -1; i++) // -1 cause we start at 0
 		{
 			var uid = UUID::randomUUID 
@@ -165,7 +190,7 @@ agent PuzzleCreator {
 								SharedValues.setMatrix(x,y,-1)
 							}
 						}
-					}
+					} 
 					
 				}
 				else //spawn an active tile
@@ -182,19 +207,9 @@ agent PuzzleCreator {
 							}
 						}
 					}
-				}
-				
-				
-				for (var y = 0 ; y < puzzleSize ; y++)
-				{ 
-					for (var x = 0 ; x < puzzleSize ; x++)
-					{
-						print(SharedValues.getMatrix(x,y) + "|" )
-					}
-					println("")
-				}
-				println("")	
-			}
+				}				 
+				printMatrix(puzzleSize)  
+			}  
 		}
 
 		var evt = new SearchSatisfaction()
