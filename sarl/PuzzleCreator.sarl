@@ -43,28 +43,26 @@ skill matrixManager implements capMatrixManager
 	}
 }
  
-
 agent PuzzleCreator {
-	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager
+	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager	
+	var puzzleSize = 4	
+ 	var tileNumber : Integer
 	
-	var puzzleSize = 4
-	var squareSpace = UUID::randomUUID 
-	var tileSpace = UUID::randomUUID
-	var allTileNumbers = new ArrayList<Integer>()
-	var tileNumber : Integer
-	var spaceSquareCenter = new ArrayList<EventSpace>()
-	var rightColumn = new ArrayList<Integer>()
-	var leftColumn = new ArrayList<Integer>()
-	var startingSpace : OpenEventSpace 
-  
 	on Initialize {
-		  
+		val random = new Random()
+		var randNumber : Integer
+		var allTileNumbers = new ArrayList<Integer>()
+		var spaceSquareCenter = new ArrayList<EventSpace>()
+		var rightColumn = new ArrayList<Integer>()
+		var leftColumn = new ArrayList<Integer>()
+		var startingSpace : OpenEventSpace 
+  
 		setSkill(capMatrixManager, new matrixManager)
 		  		  
 		//create an arraylist with all tile
 		for (var i = 0; i<=puzzleSize*puzzleSize - 1; i++)
 		{
-			allTileNumbers.add(i)  
+			allTileNumbers.add(i)
 		}
 		 
 		for(var i = 0; i <= (puzzleSize * puzzleSize) -1; i++) // -1 cause we start at 0
@@ -88,6 +86,13 @@ agent PuzzleCreator {
 	
 		for(var i = 0; i < (puzzleSize * puzzleSize); i++) 
 		{
+			if (allTileNumbers.size() > 0)
+			{
+				randNumber = random.nextInt(allTileNumbers.size())
+				tileNumber = allTileNumbers.get(randNumber)
+				allTileNumbers.remove(tileNumber)		 	
+			}
+			
 			var spaceToAddToSquareAgent = new ArrayList<EventSpace>()
 			var tuileSquareSpace : OpenEventSpace  
 			tuileSquareSpace = defaultContext.createSpace(typeof(OpenEventSpaceSpecification), UUID::randomUUID ) 
@@ -95,7 +100,6 @@ agent PuzzleCreator {
 			//in these if we create multiple space with square that are neighbour
 			if(i == 0) //top left corner  
 			{
-				println("dans i = 0")
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
@@ -156,64 +160,53 @@ agent PuzzleCreator {
 			}
 	
 			//spawn of square agent
-			spawn(Square, i, tuileSquareSpace, spaceToAddToSquareAgent)
+			spawn(Square, i,tileNumber, tuileSquareSpace, spaceToAddToSquareAgent)
 	
-			if (allTileNumbers.size() > 0)
+									
+			//we start the puzzle with tile 3
+			if (tileNumber == puzzleSize - 1)
 			{
-				val random = new Random()
-				var randNumber : Integer
-				
-				randNumber = random.nextInt(allTileNumbers.size())
-				tileNumber = allTileNumbers.get(randNumber)
-				allTileNumbers.remove(tileNumber)
-				
+				startingSpace = tuileSquareSpace
+				startingSpace.register(asEventListener())					
+			}
 			
+			//spawn blank tile 
+			if (allTileNumbers.size() == 1)
+			{
+				spawn(BlankTile, tuileSquareSpace)
 				
-				//we start the puzzle with tile 3
-				if (tileNumber == puzzleSize - 1)
+				for (var x=0; x<puzzleSize; x++)
 				{
-					startingSpace = tuileSquareSpace
-					startingSpace.register(asEventListener())					
-				}
-				
-				//spawn blank tile
-				if (allTileNumbers.size() == 1)
-				{
-					spawn(BlankTile, tuileSquareSpace)
-					
-					for (var x=0; x<puzzleSize; x++)
+					for(var y=0; y<puzzleSize;y++)
 					{
-						for(var y=0; y<puzzleSize;y++)
+						if (y*puzzleSize+x == i)
 						{
-							if (y*puzzleSize+x == i)
-							{
-								SharedValues.setMatrix(x,y,-1)
-							}
-						}
-					} 
-					
-				}
-				else //spawn an active tile
-				{
-					spawn(ActiveTile, tileNumber, tuileSquareSpace)
-					
-					for (var y = 0; y<puzzleSize; y++)
-					{
-						for(var x=0; x<puzzleSize; x++)
-						{
-							if (y*puzzleSize+x == i)
-							{
-								SharedValues.setMatrix(x,y,tileNumber)
-							}
+							SharedValues.setMatrix(x,y,-1)
 						}
 					}
-				}				 
-				printMatrix(puzzleSize)  
-			}  
+				} 
+				
+			}
+			else //spawn an active tile
+			{
+				spawn(ActiveTile, tileNumber, tuileSquareSpace)
+				
+				for (var y = 0; y<puzzleSize; y++)
+				{
+					for(var x=0; x<puzzleSize; x++)
+					{
+						if (y*puzzleSize+x == i)
+						{
+							SharedValues.setMatrix(x,y,tileNumber)
+						}
+					}
+				}
+			}				 
+			printMatrix(puzzleSize)
 		}
 
 		var evt = new SearchSatisfaction()
-		evt.source = startingSpace.getAddress(getID()); 
+		evt.source = startingSpace.getAddress(getID())
 		startingSpace.emit(evt) 
 				
 		killMe //puzzle creator die
