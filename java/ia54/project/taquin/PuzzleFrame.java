@@ -14,13 +14,16 @@ import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import npuzzle.EcoNPuzzle;
 
 public class PuzzleFrame extends Frame {
 
 	private static final long serialVersionUID = 4795963828492414386L;
-	private   int DEFAULT_SIZE;
+	private int DEFAULT_SIZE;
 	Panel centralPanel;
+	
+	private int PUZZLE_WIDTH = 600;
+	private int PUZZLE_HEIGHT = 500;
+	
 	
    public PuzzleFrame(String title, int tileNumber) {
 	   super(title);
@@ -33,7 +36,7 @@ public class PuzzleFrame extends Frame {
 		
 		Panel puzzlePanel = new Panel();
 		puzzlePanel.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		puzzlePanel.setBounds(0,0,609,494);
+		puzzlePanel.setBounds(0,0,PUZZLE_WIDTH,PUZZLE_HEIGHT);
 		puzzlePanel.setBackground(new Color(16777215));
 		add("Center", puzzlePanel);
 		
@@ -41,6 +44,7 @@ public class PuzzleFrame extends Frame {
 		setResizable(false);
 		
 		// TODO Create the actual puzzle
+		Puzzle puzzle = new Puzzle(this, DEFAULT_SIZE, PUZZLE_WIDTH, PUZZLE_HEIGHT);
 //		taquin = new EcoNPuzzle( this,  TAILLE_DEFAUT);//creation d'une instance d'EcoNPuzzle
 //	    //liee a la fenetre de l'application
 //	    puzzlePanel.add( taquin.support);
