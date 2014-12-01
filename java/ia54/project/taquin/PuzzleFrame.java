@@ -45,11 +45,9 @@ public class PuzzleFrame extends Frame {
 		
 		// TODO Create the actual puzzle
 		Puzzle puzzle = new Puzzle(this, DEFAULT_SIZE, PUZZLE_WIDTH, PUZZLE_HEIGHT);
-//		taquin = new EcoNPuzzle( this,  TAILLE_DEFAUT);//creation d'une instance d'EcoNPuzzle
-//	    //liee a la fenetre de l'application
-//	    puzzlePanel.add( taquin.support);
+	    puzzlePanel.add( puzzle.getPuzzleSupport() );
         
-		// pack(); //donne a la fenetre une taille adaptee aux composants qui s'y trouvent
+		pack(); //donne a la fenetre une taille adaptee aux composants qui s'y trouvent
         setVisible(true);
         toFront();
         
@@ -71,5 +69,6 @@ public class PuzzleFrame extends Frame {
 	void PuzzleFrame_WindowClosing(java.awt.event.WindowEvent event)
 	{
             dispose();
+            System.exit(0);
 	}
 }
