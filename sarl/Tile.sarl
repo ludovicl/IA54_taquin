@@ -31,7 +31,7 @@ agent ActiveTile {
         tileSquareSpace.register(asEventListener())
         isSatisfed = false
 
-        println("Active tile spawned with number" + placementNumber)
+        println("Active tile spawned with number: " + placementNumber)
     }
     
     on SearchSatisfaction{ 

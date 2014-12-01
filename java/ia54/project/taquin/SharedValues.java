@@ -2,7 +2,20 @@ package ia54.project.taquin;
 
 public class SharedValues {
 
-	private static int[][] puzzleMatrix = new int[4][4]; 
+	 //TODO Should later be int[size][size]
+
+	private static int size = 4;
+	private static int[][] puzzleMatrix = new int[4][4];
+	
+	public static int getSize()
+	{
+		return size;
+	}
+
+	public static void setSize(int size)
+	{
+		SharedValues.size = size;
+	}
 
 	public static void setMatrix(int x, int y, int v)
 	{
@@ -13,5 +26,4 @@ public class SharedValues {
 	{
 		return puzzleMatrix[x][y];
 	}
-	   
 }

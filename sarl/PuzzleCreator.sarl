@@ -20,8 +20,9 @@ import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpaceSpecification
 import io.sarl.lang.core.EventListener
-import io.sarl.lang.core.Capacity 
+import io.sarl.lang.core.Capacity
 import ia54.project.taquin.SharedValues
+import ia54.project.taquin.PuzzleLauncher
 
 capacity capMatrixManager
 {
@@ -123,7 +124,7 @@ agent PuzzleCreator {
 			var tuileSquareSpace : OpenEventSpace  
 			tuileSquareSpace = defaultContext.createSpace(typeof(OpenEventSpaceSpecification), UUID::randomUUID ) 
 							
-			//in these if we create multiple space with square that are neighbour
+			//in these if we create multiple space with square that are neighbors
 			if(i == 0) //top left corner  
 			{
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
@@ -218,6 +219,10 @@ agent PuzzleCreator {
 			printMatrix(puzzleSize)
 		}
 
+		// TODO Launch the puzzle interface
+		PuzzleLauncher.launchInterface("Taquin", 4);
+		
+		
 		var evt = new SearchSatisfaction()
 		evt.source = startingSpace.getAddress(getID())
 		startingSpace.emit(evt) 

@@ -37,8 +37,6 @@ agent Square {
 				
 		tileSquareSpace.register(asEventListener())
 
-		println("spaceToAddToSquareAgent" + squareSpace.size())	// size => from 2 to 5
-		println("Square spawned with number" + placementNumber)
 	}
 	
 	on AskMySquareNumber 
@@ -48,63 +46,49 @@ agent Square {
 		tileSquareSpace.emit(evt)
 	}
 		
-	on AskMySquareWhoAttack
-	{
-		var topTile : Integer;
-		var rightTile : Integer;
-		var bottomTile : Integer;
-		var leftTile : Integer;
-		
-		for (var y = 0 ; y < puzzleSize ; y++)
-		{ 
-			for (var x = 0 ; x < puzzleSize ; x++)
-			{
-				//we found the number in the matrix
-				if (tileNumberOneMe == SharedValues.getMatrix(x, y)) 
-				{
-					/*--get the adjacent numbers cheking the matrix--*/
-					
-					//top of current tile
-					if (y-1 >= 0 )
-					{
-					 	topTile = SharedValues.getMatrix(x, y-1)
-					}
-					
-					//bottom of current tile
-					if (y+1 < puzzleSize)
-					{
-						bottomTile = SharedValues.getMatrix(x, y+1)
-					}
-					
-					//left of current tile
-					if(x-1 >=0 )
-					{
-						leftTile = SharedValues.getMatrix(x-1, y)
-					}
-					
-					//right of current tile
-					if(x+1 < puzzleSize )
-					{
-						rightTile = SharedValues.getMatrix(x+1, y)
-//						var xInitial = x+1
-//						var yInitial = y
-						
-						
-					
-					
-//						var  
-						
-					}
-					
-					
-					
-					
-							
-				}
-			}
-			println("")
-		}
-		
-	}	
+//	on AskMySquareWhoAttack
+//	{
+//		var topTile : Integer;
+//		var rightTile : Integer;
+//		var bottomTile : Integer;
+//		var leftTile : Integer;
+//		
+//		for (var y = 0 ; y < puzzleSize ; y++)
+//		{ 
+//			for (var x = 0 ; x < puzzleSize ; x++)
+//			{
+//				//we found the number in the matrix
+//				if (tileNumberOneMe == SharedValues.getMatrix(x, y)) 
+//				{
+//					/*--get the adjacent numbers cheking the matrix--*/
+//					
+//					//top of current tile
+//					if (y-1 >= 0 )
+//					{
+//					 	topTile = SharedValues.getMatrix(x, y-1)
+//					}
+//					
+//					if (y+1 < puzzleSize)
+//					{
+//						bottomTile = SharedValues.getMatrix(x, y+1)
+//					}
+//					
+//					if(x-1 >=0 )
+//					{
+//						leftTile = SharedValues.getMatrix(x, x-1)
+//					}
+//					
+//					if(x+1 < puzzleSize )
+//					{
+//						rightTile = SharedValues.getMatrix(x, x+1)
+//					}
+//					
+//							
+//				}
+//			}
+//			println("")
+//		}
+//		
+//	}	
 		
 }
