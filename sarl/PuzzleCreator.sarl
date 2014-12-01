@@ -20,13 +20,16 @@ import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpaceSpecification
 import io.sarl.lang.core.EventListener
-import io.sarl.lang.core.Capacity
+import io.sarl.lang.core.Capacity 
 import ia54.project.taquin.SharedValues
 
 capacity capMatrixManager
 {
 	def printMatrix(puzzleSize : Integer) : void
-}
+	def getMatrixXYwithCaseNumber(caseNumber : Integer,  puzzleSize : Integer) : ArrayList<Integer>
+	def getMatrixCaseNumberWithXY(x : Integer, y : Integer,  puzzleSize : Integer) : Integer
+} 
+ 
 
 skill matrixManager implements capMatrixManager
 {
@@ -40,6 +43,29 @@ skill matrixManager implements capMatrixManager
 			}
 			println("")
 		}
+	}
+	
+	def getMatrixXYwithCaseNumber(caseNumber : Integer, puzzleSize : Integer) : ArrayList<Integer> 
+	{
+		for (var y = 0; y<puzzleSize; y++)
+		{
+			for(var x=0; x<puzzleSize; x++)
+			{
+				if (y*puzzleSize+x == caseNumber)
+				{
+					var retVal =  new ArrayList<Integer>()
+					retVal.add(x)
+					retVal.add(y)	
+					
+					return retVal
+				}
+			}
+		}
+	}
+	
+	def getMatrixCaseNumberWithXY(x : Integer, y : Integer, puzzleSize : Integer) : Integer 
+	{
+		return y*puzzleSize+x
 	}
 }
  
@@ -64,7 +90,7 @@ agent PuzzleCreator {
 		{
 			allTileNumbers.add(i)
 		}
-		 
+		
 		for(var i = 0; i <= (puzzleSize * puzzleSize) -1; i++) // -1 cause we start at 0
 		{
 			var uid = UUID::randomUUID 
@@ -89,7 +115,7 @@ agent PuzzleCreator {
 			if (allTileNumbers.size() > 0)
 			{
 				randNumber = random.nextInt(allTileNumbers.size())
-				tileNumber = allTileNumbers.get(randNumber)
+				tileNumber = allTileNumbers.get(randNumber) 
 				allTileNumbers.remove(tileNumber)		 	
 			}
 			
@@ -175,40 +201,27 @@ agent PuzzleCreator {
 			{
 				spawn(BlankTile, tuileSquareSpace)
 				
-				for (var x=0; x<puzzleSize; x++)
-				{
-					for(var y=0; y<puzzleSize;y++)
-					{
-						if (y*puzzleSize+x == i)
-						{
-							SharedValues.setMatrix(x,y,-1)
-						}
-					}
-				} 
+				var xyVal = new ArrayList<Integer>()
+				xyVal = getMatrixXYwithCaseNumber(i, puzzleSize)
+				SharedValues.setMatrix(xyVal.get(0),xyVal.get(1),-1)
 				
 			}
 			else //spawn an active tile
 			{
 				spawn(ActiveTile, tileNumber, tuileSquareSpace)
 				
-				for (var y = 0; y<puzzleSize; y++)
-				{
-					for(var x=0; x<puzzleSize; x++)
-					{
-						if (y*puzzleSize+x == i)
-						{
-							SharedValues.setMatrix(x,y,tileNumber)
-						}
-					}
-				}
+				var xyVal = new ArrayList<Integer>()			
+				xyVal = getMatrixXYwithCaseNumber(i, puzzleSize)
+				SharedValues.setMatrix(xyVal.get(0), xyVal.get(1), tileNumber)				
 			}				 
+			
 			printMatrix(puzzleSize)
 		}
 
 		var evt = new SearchSatisfaction()
 		evt.source = startingSpace.getAddress(getID())
 		startingSpace.emit(evt) 
-				
+
 		killMe //puzzle creator die
 
 	}

@@ -41,7 +41,17 @@ agent ActiveTile {
     }
     
     on SendMySquareNumber{
-    	println("I am tile number " + placementNumber + " and my square is " + occurrence.squareNumber) 
+    	println("I am tile number " + placementNumber + " and my square is " + occurrence.squareNumber)
+    	if (occurrence.squareNumber!=placementNumber)
+    	{
+    			
+    	 	
+    	}
+    	else
+    	{
+    		isSatisfed=true
+    	}
+    	 
     } 
     
 }

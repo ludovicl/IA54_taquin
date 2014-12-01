@@ -70,20 +70,34 @@ agent Square {
 					 	topTile = SharedValues.getMatrix(x, y-1)
 					}
 					
+					//bottom of current tile
 					if (y+1 < puzzleSize)
 					{
 						bottomTile = SharedValues.getMatrix(x, y+1)
 					}
 					
+					//left of current tile
 					if(x-1 >=0 )
 					{
-						leftTile = SharedValues.getMatrix(x, x-1)
+						leftTile = SharedValues.getMatrix(x-1, y)
 					}
 					
+					//right of current tile
 					if(x+1 < puzzleSize )
 					{
-						rightTile = SharedValues.getMatrix(x, x+1)
+						rightTile = SharedValues.getMatrix(x+1, y)
+//						var xInitial = x+1
+//						var yInitial = y
+						
+						
+					
+					
+//						var  
+						
 					}
+					
+					
+					
 					
 							
 				}

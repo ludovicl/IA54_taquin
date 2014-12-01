@@ -37,3 +37,7 @@ event SendMySquareNumber {
 	
 }
 
+event AskMySquareWhoAttack{
+	
+}
+
