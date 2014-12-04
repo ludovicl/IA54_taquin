@@ -18,44 +18,59 @@ import java.util.List
 import java.util.ArrayList
 import io.sarl.lang.core.EventSpace
 import io.sarl.lang.core.EventSpaceSpecification
+import io.sarl.lang.core.EventListener
 
 agent ActiveTile {
     uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
-    var placementNumber : Integer
+    var myNumber : Integer
     var tileSquareSpace : OpenEventSpace
     var isSatisfed : Boolean
      
     on Initialize {
-        placementNumber = occurrence.parameters.get(0) as Integer
+        myNumber = occurrence.parameters.get(0) as Integer
         tileSquareSpace = occurrence.parameters.get(1) as OpenEventSpace
         tileSquareSpace.register(asEventListener())
         isSatisfed = false
 
-        println("Active tile spawned with number: " + placementNumber)
+        println("Active tile spawned with number: " + myNumber)
     }
     
-    on SearchSatisfaction{ 
+    on SearchSatisfaction{
     	var evt = new AskMySquareNumber() //define the event
 		evt.source = tileSquareSpace.getAddress(getID()) //define source 
 		tileSquareSpace.emit(evt) //emit the event in the space
     }
     
     on SendMySquareNumber{
-    	println("I am tile number " + placementNumber + " and my square is " + occurrence.squareNumber)
-    	if (occurrence.squareNumber!=placementNumber)
+    	println("I am tile number " + myNumber + " and my square is " + occurrence.squareNumber)
+    	if (occurrence.squareNumber!=myNumber)
     	{
-    			
-    	 	
+    		var evt = new AskSquareToSearchToAttack() //define the event 
+			evt.source = tileSquareSpace.getAddress(getID()) //define source 
+//			tileSquareSpace.emit(evt) //emit the event in the space
     	}
     	else
     	{
     		isSatisfed=true
-    	}
-    	 
+    	}    	  
     } 
     
+    on ExchangeWithThatSpace
+    {
+    	tileSquareSpace.unregister(asEventListener())
+    	occurrence.newSpace.register(asEventListener())
+    }
+    
+//    on getMyTileUUIDandSpace
+//    {
+//    	if (occurrence.)
+//    	var evt = new returnTileUUIDandSpace(tileSquareSpace, ) //define the event 
+//		evt.source = tileSquareSpace.getAddress(getID()) //define source 
+//		tileSquareSpace.emit(evt) //emit the event in the space
+//    	 	
+//    }
 }
- 
+
 agent BlankTile {
     uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
     var space : OpenEventSpace

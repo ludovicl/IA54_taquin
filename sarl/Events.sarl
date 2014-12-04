@@ -16,14 +16,14 @@ import java.util.UUID
 import io.sarl.lang.core.Space
 import java.util.List
 import java.util.ArrayList
- 
+import io.sarl.lang.core.Agent
+
 event SearchSatisfaction {
-	
-	
+
 }
 
 event AskMySquareNumber {
-
+	
 	
 }
 
@@ -34,10 +34,103 @@ event SendMySquareNumber {
 	{
 		squareNumber = nb
 	}
+}
+
+event AskSquareToSearchToAttack{
 	
 }
 
-event AskMySquareWhoAttack{
+/*
+ * 
+ */
+event SquareWithTileToMove{
+	val tileNumber : Integer
 	
+	new (tile : Integer)
+	{
+		tileNumber = tile
+	}
 }
 
+
+
+
+event AskTileToAttack{
+	val tileNumber : Integer
+	
+	new (tile : Integer)
+	{
+		tileNumber = tile
+	}
+}
+
+event AttackTile
+{
+	val tileNumber : Integer
+	
+	new (tile : Integer)
+	{
+		tileNumber = tile
+	}
+}
+
+event getMyTileUUIDandSpace
+{
+
+}
+
+event returnTileUUIDandSpace
+{
+	var space : OpenEventSpace 
+	val uid : UUID
+	
+	new (s : OpenEventSpace, u : UUID)
+	{
+		space = s
+		uid = u 
+	}
+}
+
+event SearchSquareWithBlankTile
+{
+	var squareSpace : Space
+	var squareEmplacement : Integer
+	
+	new (s : Space, empl : Integer)
+	{
+		squareSpace = s
+		squareEmplacement = empl
+	}
+}
+
+event BlankTileIsOnMe
+{
+	var tileOnMe : Boolean
+	
+	new (btiom : Boolean)
+	{ 
+		tileOnMe = btiom
+	}
+}
+
+event AskYourTileToExchangeWithThatSpace 
+{
+	var newSpace : OpenEventSpace 
+	var squareEmplacement : Integer
+	
+	new (s : OpenEventSpace, emp : Integer)
+	{
+		newSpace = s
+		squareEmplacement = emp
+	}
+}
+
+event ExchangeWithThatSpace
+{
+	var newSpace : OpenEventSpace 
+
+	new (s : OpenEventSpace)
+	{
+		newSpace = s
+	}	
+}
