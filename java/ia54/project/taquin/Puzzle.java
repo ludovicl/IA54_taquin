@@ -54,7 +54,9 @@ public class Puzzle extends JFrame {
    public void refresh(){
       for (int row = 0; row < ROWS; ++row) {
           for (int col = 0; col < COLS; ++col) {
-              int number = SharedValues.getMatrix(row, col);
+        	  // In the agent part of the project the tile values are stored from 0 to 14,
+        	  // here we want from 1 to 15
+              int number = SharedValues.getMatrix(row, col) + 1;
               drawTile(number, row, col);
           }
       }
