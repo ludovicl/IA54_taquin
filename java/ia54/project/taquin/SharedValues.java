@@ -4,8 +4,10 @@ public class SharedValues {
 
 	 //TODO Should later be int[size][size]
 
-	private static int size = 4;
-	private static int[][] puzzleMatrix = new int[4][4];
+	// Number of tiles a side of the puzzle will have, default 4 
+	// This is the supreme variable with which all other size variables are defined
+	private static int size = 4;		
+	private static int[][] puzzleMatrix = new int[size][size];
 	
 	public static int getSize()
 	{

@@ -188,6 +188,9 @@ agent PuzzleCreator {
 			printMatrix(puzzleSize)
 		}
 
+		// Launch the GUI
+		PuzzleLauncher.launchInterface()
+
 		var evt = new SearchSatisfaction()
 		evt.source = startingSpace.getAddress(getID())
 		startingSpace.emit(evt) 

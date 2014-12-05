@@ -37,7 +37,9 @@ public class Puzzle extends JFrame {
             tfCells[row][col] = new JTextField(); // allocate element of array
             cp.add(tfCells[row][col]);  // ContentPane adds JTextField
             
-            int number = SharedValues.getMatrix(row, col);
+      	  	// In the agent part of the project the tile values are stored from 0 to 14,
+      	  	// here we want from 1 to 15
+            int number = SharedValues.getMatrix(row, col) + 1;
             drawTile(number, row, col);
          }
       }
@@ -65,7 +67,7 @@ public class Puzzle extends JFrame {
    
    private void drawTile(int number, int row, int col){
        // Try if blank tile
-       if ( number == -1 ){
+       if ( number == 0 ){
            tfCells[row][col].setText("");  // empty
            tfCells[row][col].setBackground(Color.WHITE);
            tfCells[row][col].setFocusable(false);
