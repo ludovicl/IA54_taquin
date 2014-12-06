@@ -8,101 +8,93 @@ public class Puzzle extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-// Name-constants for the various dimensions
-   private static int ROWS = 4; // ROWS by COLS cells, default value
-   private static int COLS = 4;
-   // TODO Scale the cell size to the number of tiles
-   private static int CELL_SIZE = 60; // Cell width/height
-   private static int CANVAS_WIDTH = CELL_SIZE * COLS;
-   private static int CANVAS_HEIGHT = CELL_SIZE * ROWS;
+
+	
+	private static int SIZE = SharedValues.getSize();; // Number of tiles per side
+	private static int CELL_SIZE = 480 / SIZE; // Cell width/height
+	private static int CANVAS_SIZE = CELL_SIZE * SIZE;
+	private static int FONT_SIZE = 160 / SIZE;
  
-   // Game board
-   private int[][] cells;
-   private JTextField[][] tfCells;
+	// Game board
+	private int[][] cells;
+	private JTextField[][] tfCells;
 
  
-   /** Constructor to setup the game and the GUI */
-   public Puzzle() {
-      Container cp = getContentPane();
-      cp.setLayout(new GridLayout(ROWS, COLS));
+	/** Constructor to setup the game and the GUI */
+	public Puzzle() {
+		Container cp = getContentPane();
+		cp.setLayout(new GridLayout(SIZE, SIZE));
  
-      ROWS = COLS = SharedValues.getSize();
+//      SIZE = SharedValues.getSize();
+//      CELL_SIZE = 240 / SIZE; // Cell width/height
+//      CANVAS_SIZE = CELL_SIZE * SIZE;
+//      FONT_SIZE = 80 / SIZE;
       
-      cells = new int[ROWS][COLS];
-      tfCells = new JTextField[ROWS][COLS]; // allocate JTextField array
+		cells = new int[SIZE][SIZE];
+		tfCells = new JTextField[SIZE][SIZE]; // allocate JTextField array
  
-      // Create 9x9 JTextFields and place on the GridLayout
-      for (int row = 0; row < ROWS; ++row) {
-         for (int col = 0; col < COLS; ++col) {
-            tfCells[row][col] = new JTextField(); // allocate element of array
-            cp.add(tfCells[row][col]);  // ContentPane adds JTextField
-            
-            int number = SharedValues.getMatrix(row, col);
-            drawTile(number, row, col);
-         }
-      }
-      
-      cp.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
- 
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      pack();
-      setTitle("Taquin");
-      setVisible(true);
-   }
+		// Create 9x9 JTextFields and place on the GridLayout
+		for (int col = 0; col < SIZE; ++col) {
+			for (int row = 0; row < SIZE; ++row) {  
+				tfCells[row][col] = new JTextField(); // allocate element of array
+				cp.add(tfCells[row][col]);  // ContentPane adds JTextField
+				// In the agent part of the project the tile values are stored from 0 to 14,
+				// here we want from 1 to 15
+				int number = SharedValues.getMatrix(row, col) + 1;
+				drawTile(number, row, col);
+			}
+		}
+		cp.setPreferredSize(new Dimension(CANVAS_SIZE, CANVAS_SIZE));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		pack();
+		setTitle("Taquin");
+		setVisible(true);
+	}
 
    
-   public void refresh(){
-      for (int row = 0; row < ROWS; ++row) {
-          for (int col = 0; col < COLS; ++col) {
-              int number = SharedValues.getMatrix(row, col);
-              drawTile(number, row, col);
-          }
-      }
-   }
+	public void refresh(){
+		for (int row = 0; row < SIZE; ++row) {
+			for (int col = 0; col < SIZE; ++col) {
+				// In the agent part of the project the tile values are stored from 0 to 14,
+				// here we want from 1 to 15
+				int number = SharedValues.getMatrix(row, col) + 1;
+				drawTile(number, row, col);
+			}
+		}
+	}
 
    
-   private void drawTile(int number, int row, int col){
-       // Try if blank tile
-       if ( number == -1 ){
-           tfCells[row][col].setText("");  // empty
-           tfCells[row][col].setBackground(Color.WHITE);
-           tfCells[row][col].setFocusable(false);
-       }
-       else {
-       	// Try if tiles is in correct place		
-			if( SharedValues.getMatrix(row, col) == (row + 4*col)){
-				tfCells[row][col].setBackground(Color.DARK_GRAY);
+	private void drawTile(int number, int row, int col){
+		// Try if blank tile
+		if ( number == 0 ){		// The blank tile number in the SharedValues Matrix is -1 but since we previously added 1 it is now 0
+			tfCells[row][col].setText("");  // empty
+			tfCells[row][col].setBackground(Color.WHITE);
+			tfCells[row][col].setFocusable(false);
+		}
+		else {
+			// Try if tiles is in correct place		
+			if( SharedValues.getMatrix(row, col) == (row + SIZE*col)){
+				tfCells[row][col].setBackground(Color.BLUE);
 			}
 			else{
-				tfCells[row][col].setBackground(Color.GRAY);
+				tfCells[row][col].setBackground(Color.CYAN);
 			}
-           cells[row][col] = number;
-           tfCells[row][col].setText(number + "");
-           tfCells[row][col].setFocusable(false);
-           tfCells[row][col].setHorizontalAlignment(JTextField.CENTER);
-           // TODO Scale the font size to the number of tiles
-           tfCells[row][col].setFont(new Font("Monospaced", Font.BOLD, 20));
-       }
-   }
+			cells[row][col] = number;
+			tfCells[row][col].setText(number + "");
+			tfCells[row][col].setFocusable(false);
+			tfCells[row][col].setHorizontalAlignment(JTextField.CENTER);
+			tfCells[row][col].setFont(new Font("Monospaced", Font.BOLD, FONT_SIZE));
+		}
+	}
    
    
-   public static int getROWS() {
-		return ROWS;
-   }
-	
-	
-	public static void setROWS(int rOWS) {
-		ROWS = rOWS;
+	public static int getSIZE() {
+	   return SIZE;
 	}
 	
 	
-	public static int getCOLS() {
-		return COLS;
-	}
-	
-	
-	public static void setCOLS(int cOLS) {
-		COLS = cOLS;
+	public static void setSIZE(int size) {
+		SIZE = size;
 	}
 	
 	
@@ -116,26 +108,27 @@ public class Puzzle extends JFrame {
 	}
 	
 	
-	public static int getCANVAS_WIDTH() {
-		return CANVAS_WIDTH;
+	
+	public static int getCANVAS_SIZE() {
+		return CANVAS_SIZE;
 	}
-	
-	
-	public static void setCANVAS_WIDTH(int cANVAS_WIDTH) {
-		CANVAS_WIDTH = cANVAS_WIDTH;
+
+
+	public static void setCANVAS_SIZE(int cANVAS_SIZE) {
+		CANVAS_SIZE = cANVAS_SIZE;
 	}
-	
-	
-	public static int getCANVAS_HEIGHT() {
-		return CANVAS_HEIGHT;
+
+
+	public static int getFONT_SIZE() {
+		return FONT_SIZE;
 	}
-	
-	
-	public static void setCANVAS_HEIGHT(int cANVAS_HEIGHT) {
-		CANVAS_HEIGHT = cANVAS_HEIGHT;
+
+
+	public static void setFONT_SIZE(int fONT_SIZE) {
+		FONT_SIZE = fONT_SIZE;
 	}
-	
-	
+
+
 	public int[][] getCells() {
 		return cells;
 	}

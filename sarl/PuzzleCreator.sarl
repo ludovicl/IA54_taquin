@@ -27,7 +27,7 @@ import ia54.project.taquin.SharedValues
  
 agent PuzzleCreator {
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager	
-	var puzzleSize = 4	
+	var puzzleSize = SharedValues.getSize()
  	var tileNumber : Integer
 	
 	on Initialize {
@@ -188,6 +188,9 @@ agent PuzzleCreator {
 			 
 			printMatrix(puzzleSize)
 		}
+
+		// Launch the GUI
+		PuzzleLauncher.launchInterface()
 
 		var evt = new SearchSatisfaction()
 		evt.source = startingSpace.getAddress(getID())
