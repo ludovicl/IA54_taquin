@@ -15,6 +15,7 @@ skill matrixManager implements capMatrixManager
 {
 	def printMatrix(puzzleSize : Integer) : void 
 	{ 
+		println ("=========")
 		for (var y = 0 ; y < puzzleSize ; y++)
 		{ 
 			for (var x = 0 ; x < puzzleSize ; x++)
@@ -23,6 +24,7 @@ skill matrixManager implements capMatrixManager
 			}
 			println("")
 		}
+		println ("=========")		
 	}
 	
 	def getMatrixXYwithCaseNumber(caseNumber : Integer, puzzleSize : Integer) : ArrayList<Integer> 

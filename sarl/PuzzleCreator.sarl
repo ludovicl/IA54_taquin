@@ -34,7 +34,7 @@ agent PuzzleCreator {
 		val random = new Random()
 		var randNumber : Integer
 		var allTileNumbers = new ArrayList<Integer>()
-		var spaceSquareCenter = new ArrayList<EventSpace>()
+		var spaceSquareCenter = new ArrayList<OpenEventSpace>()
 		var rightColumn = new ArrayList<Integer>()
 		var leftColumn = new ArrayList<Integer>()
 		var startingSpace : OpenEventSpace 
@@ -42,14 +42,14 @@ agent PuzzleCreator {
 		setSkill(capMatrixManager, new matrixManager)
 		  		  
 		//create an arraylist with all tile
-		for (var i = 0; i<=puzzleSize*puzzleSize - 1; i++)
+		for (var i = 0; i<=puzzleSize*puzzleSize - 2; i++)
 		{
 			allTileNumbers.add(i)
 		}
 		
-		for(var i = 0; i <= (puzzleSize * puzzleSize) -1; i++) // -1 cause we start at 0
+		for(var i = 0; i <= (puzzleSize * puzzleSize) -1; i++) // -1 cause we start at 0 
 		{
-			var uid = UUID::randomUUID 
+			var uid = UUID::randomUUID   
 			var space = defaultContext.createSpace(typeof(OpenEventSpaceSpecification),uid)
 			spaceSquareCenter.add(space)
 		}
@@ -66,18 +66,19 @@ agent PuzzleCreator {
 			rightColumn.add(j * puzzleSize - 1) 
 		}
 	
-		for(var i = 0; i < (puzzleSize * puzzleSize); i++) 
+		for(var i = 0; i <= (puzzleSize * puzzleSize) - 1; i++) 
 		{
-			var mainSquareSpace : EventSpace // the space with the agent centred and his neighbor 
+			var mainSquareSpace : OpenEventSpace // the space with the agent centred and his neighbor 
 			
-			if (allTileNumbers.size() > 0)
+			tileNumber = -1
+			if (!allTileNumbers.isEmpty())
 			{
 				randNumber = random.nextInt(allTileNumbers.size())
 				tileNumber = allTileNumbers.get(randNumber) 
 				allTileNumbers.remove(tileNumber)		 	
 			}
 			
-			var spaceToAddToSquareAgent = new ArrayList<EventSpace>()
+			var spaceToAddToSquareAgent = new ArrayList<OpenEventSpace>()
 			var tuileSquareSpace : OpenEventSpace  
 			tuileSquareSpace = defaultContext.createSpace(typeof(OpenEventSpaceSpecification), UUID::randomUUID ) 
 							
@@ -108,8 +109,8 @@ agent PuzzleCreator {
 			{
 //				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				mainSquareSpace = spaceSquareCenter.get(i)
-				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1)) 
-				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))				
+				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
+				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
 			}
 			else if(leftColumn.contains(i)) // left column
 			{  
@@ -148,7 +149,7 @@ agent PuzzleCreator {
 			else
 			{
 				//spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
-				mainSquareSpace = spaceSquareCenter.get(i)				
+				mainSquareSpace = spaceSquareCenter.get(i)
 
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))				
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
@@ -167,7 +168,7 @@ agent PuzzleCreator {
 			}
 			
 			//spawn blank tile 
-			if (allTileNumbers.size() == 1)
+			if (tileNumber == -1)
 			{
 				spawn(BlankTile, tuileSquareSpace)
 				
@@ -180,9 +181,9 @@ agent PuzzleCreator {
 			{
 				spawn(ActiveTile, tileNumber, tuileSquareSpace)
 				
-				var xyVal = new ArrayList<Integer>()			
+				var xyVal = new ArrayList<Integer>()		
 				xyVal = getMatrixXYwithCaseNumber(i, puzzleSize)
-				SharedValues.setMatrix(xyVal.get(0), xyVal.get(1), tileNumber)				
+				SharedValues.setMatrix(xyVal.get(0), xyVal.get(1), tileNumber)	
 			}
 			 
 			printMatrix(puzzleSize)

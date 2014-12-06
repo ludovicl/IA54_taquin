@@ -91,6 +91,11 @@ event returnTileUUIDandSpace
 	}
 }
 
+event IsBlankTileANeighbor
+{ 
+	
+}
+
 event SearchSquareWithBlankTile
 {
 	var squareSpace : Space
@@ -123,6 +128,11 @@ event AskYourTileToExchangeWithThatSpace
 		newSpace = s
 		squareEmplacement = emp
 	}
+}
+
+event AskSquareToSearchBlankTile
+{
+	
 }
 
 event ExchangeWithThatSpace
