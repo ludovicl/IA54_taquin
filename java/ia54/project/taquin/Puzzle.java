@@ -1,6 +1,7 @@
 package ia54.project.taquin;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
  
 public class Puzzle extends JFrame {
@@ -23,13 +24,16 @@ public class Puzzle extends JFrame {
 	/** Constructor to setup the game and the GUI */
 	public Puzzle() {
 		Container cp = getContentPane();
-		cp.setLayout(new GridLayout(SIZE, SIZE));
- 
+//		cp.setLayout(new GridLayout(SIZE, SIZE));
+		
 //      SIZE = SharedValues.getSize();
 //      CELL_SIZE = 240 / SIZE; // Cell width/height
 //      CANVAS_SIZE = CELL_SIZE * SIZE;
 //      FONT_SIZE = 80 / SIZE;
-      
+		
+		// New JPanel for the actual puzzle
+		JPanel puzzlePanel = new JPanel(new GridLayout(SIZE, SIZE));
+		
 		cells = new int[SIZE][SIZE];
 		tfCells = new JTextField[SIZE][SIZE]; // allocate JTextField array
  
@@ -37,14 +41,78 @@ public class Puzzle extends JFrame {
 		for (int col = 0; col < SIZE; ++col) {
 			for (int row = 0; row < SIZE; ++row) {  
 				tfCells[row][col] = new JTextField(); // allocate element of array
-				cp.add(tfCells[row][col]);  // ContentPane adds JTextField
+				puzzlePanel.add(tfCells[row][col]);  // ContentPane adds JTextField
+//				cp.add(tfCells[row][col]);  // ContentPane adds JTextField
 				// In the agent part of the project the tile values are stored from 0 to 14,
 				// here we want from 1 to 15
 				int number = SharedValues.getMatrix(row, col) + 1;
 				drawTile(number, row, col);
 			}
 		}
-		cp.setPreferredSize(new Dimension(CANVAS_SIZE, CANVAS_SIZE));
+		
+		
+		
+		// New JPanel for the buttons
+		JPanel buttonPanel = new JPanel(new GridLayout(3,3));
+		
+		// Create JButton for "New Game"
+		JButton btnNewGame = new JButton("New Game");
+		buttonPanel.add(btnNewGame);
+		btnNewGame.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Link to the new game event
+				// Get the value in txtFldSize, set SharedValues.size and launch a new game
+				System.out.println("You have clicked on 'New Game'");
+			}
+		});
+		
+		// Create JTextField for "Puzzle Size"
+		JLabel lblSize = new JLabel(" Size: ");
+		buttonPanel.add(lblSize);
+		JTextField txtFldSize = new JTextField(Integer.toString(SharedValues.getSize()));
+		buttonPanel.add(txtFldSize);
+//		btnStop.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				// TODO Link to the start event
+//				System.out.println("You have clicked on 'Stop'");
+//			}
+//		});
+		
+		// Create JButton for "Start"
+		JButton btnStart = new JButton("Start");
+		buttonPanel.add(btnStart);
+		btnStart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Link to the start event
+				System.out.println("You have clicked on 'Start'");
+			}
+		});
+		
+		// Create JTextField for "Number of moves"
+		JLabel lblMoves = new JLabel(" Number of moves: ");
+		buttonPanel.add(lblMoves);
+		JTextField txtFldMoves = new JTextField("0");
+		txtFldMoves.setEditable(false);
+		buttonPanel.add(txtFldMoves);
+		
+		// Create JButton for "Stop"
+		JButton btnStop = new JButton("Stop");
+		buttonPanel.add(btnStop);
+		btnStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//TODO Link to the stop event
+				System.out.println("You have clicked on 'Stop'");
+			}
+		});
+		
+		// Add both JPanels to the Content Pane
+		cp.add(puzzlePanel, BorderLayout.CENTER);
+		cp.add(buttonPanel, BorderLayout.SOUTH);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setTitle("Taquin");
@@ -52,6 +120,7 @@ public class Puzzle extends JFrame {
 	}
 
    
+	
 	public void refresh(){
 		for (int row = 0; row < SIZE; ++row) {
 			for (int col = 0; col < SIZE; ++col) {
@@ -64,6 +133,7 @@ public class Puzzle extends JFrame {
 	}
 
    
+	
 	private void drawTile(int number, int row, int col){
 		// Try if blank tile
 		if ( number == 0 ){		// The blank tile number in the SharedValues Matrix is -1 but since we previously added 1 it is now 0
