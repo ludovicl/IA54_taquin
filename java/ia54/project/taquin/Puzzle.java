@@ -92,6 +92,7 @@ public class Puzzle extends JFrame {
 		});
 		
 		// Create JTextField for "Number of moves"
+		// TODO Add something to update this field
 		JLabel lblMoves = new JLabel(" Number of moves: ");
 		buttonPanel.add(lblMoves);
 		JTextField txtFldMoves = new JTextField("0");
