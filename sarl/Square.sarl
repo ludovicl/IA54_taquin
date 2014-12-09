@@ -85,12 +85,16 @@ agent Square {
 //		var evt = new SquareWithTileToMove(tileToAttack) 
 //		evt.source = tileSquareSpace.getAddress(getID())
 //		tileSquareSpace.emit(evt) 
-		
+						
 		
 		for (var y = 0 ; y < puzzleSize ; y++)
 		{ 
 			for (var x = 0 ; x < puzzleSize ; x++)
 			{
+				if (SharedValues.getMatrix(x, y) == -1)
+				{
+					
+				}
 				//we found the number in the matrix
 				if (tileNumberOneMe == SharedValues.getMatrix(x, y)) 
 				{ 
@@ -104,7 +108,11 @@ agent Square {
 					{
 					 	topTile = SharedValues.getMatrix(x, y-1)
 					 	var tileXY = new ArrayList<Integer>() 
-					 	tileXY =  getMatrixXYwithCaseNumber(topTile, puzzleSize )											 						
+					 	tileXY =  getMatrixXYwithCaseNumber(topTile, puzzleSize )
+					 	var tmp: Integer
+						tmp = y-1
+						topTileCost = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - tmp)
+					 											 						
 						topTileCost = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1)  - (y - 1)) 					 	
 					}
 					
@@ -231,5 +239,10 @@ agent Square {
 			evt.source = tileSquareSpace.getAddress(getID()) 
 			tileSquareSpace.emit(evt) 
 		}
+	}
+	
+	on NewGame 
+	{
+		killMe
 	}
 }

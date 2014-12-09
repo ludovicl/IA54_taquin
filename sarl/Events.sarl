@@ -128,6 +128,7 @@ event AskYourTileToExchangeWithThatSpace
 		newSpace = s
 		squareEmplacement = emp
 	}
+	
 }
 
 event AskSquareToSearchBlankTile

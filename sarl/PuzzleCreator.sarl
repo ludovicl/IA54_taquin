@@ -75,7 +75,7 @@ agent PuzzleCreator {
 			{
 				randNumber = random.nextInt(allTileNumbers.size())
 				tileNumber = allTileNumbers.get(randNumber) 
-				allTileNumbers.remove(tileNumber)		 	
+				allTileNumbers.remove(tileNumber)
 			}
 			
 			var spaceToAddToSquareAgent = new ArrayList<OpenEventSpace>()
@@ -198,6 +198,5 @@ agent PuzzleCreator {
 
 		killMe //puzzle creator die
 
-	}
-
+	}		
 }
