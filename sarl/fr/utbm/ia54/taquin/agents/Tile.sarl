@@ -39,9 +39,9 @@ agent ActiveTile {
     	println("I am tile number " + myNumber + " and my square is " + occurrence.squareNumber)
     	if (occurrence.squareNumber!=myNumber)
     	{
-    		var evt = new AskSquareToSearchBlankTile() //define the event 
-			evt.source = tileSquareSpace.getAddress(getID()) //define source 
-			tileSquareSpace.emit(evt) //emit the event in the space
+    		var evt = new AskSquareToSearchBlankTile(myNumber) 
+			evt.source = tileSquareSpace.getAddress(getID())  
+			tileSquareSpace.emit(evt) 
     	}
     	else
     	{

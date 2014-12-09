@@ -74,7 +74,7 @@ agent PuzzleCreator {
 			
 			var spaceToAddToSquareAgent = new ArrayList<OpenEventSpace>()
 			var tuileSquareSpace : OpenEventSpace  
-			tuileSquareSpace = defaultContext.createSpace(typeof(OpenEventSpaceSpecification), UUID::randomUUID ) 
+			tuileSquareSpace = defaultContext.createSpace(typeof(OpenEventSpaceSpecification), UUID::randomUUID )
 							
 			//in these if we create multiple space with square that are neighbour
 			if(i == 0) //top left corner  

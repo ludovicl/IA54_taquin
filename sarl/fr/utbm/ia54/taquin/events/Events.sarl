@@ -23,7 +23,12 @@ event SendMySquareNumber {
 }
 
 event AskSquareToSearchToAttack{
+	val squareSearched : Integer
 	
+	new (s : Integer)
+	{
+		squareSearched = s
+	}
 }
 
 /*
@@ -31,78 +36,30 @@ event AskSquareToSearchToAttack{
  */
 event SquareWithTileToMove{
 	val tileNumber : Integer
+	val squareSearched : Integer 
 	
-	new (tile : Integer)
+	new (tile : Integer, s : Integer)
 	{
 		tileNumber = tile
+		squareSearched = s
 	}
 }
 
-
-
-
-event AskTileToAttack{
-	val tileNumber : Integer
-	
-	new (tile : Integer)
-	{
-		tileNumber = tile
-	}
-}
-
-event AttackTile
-{
-	val tileNumber : Integer
-	
-	new (tile : Integer)
-	{
-		tileNumber = tile
-	}
-}
-
-event getMyTileUUIDandSpace
-{
-
-}
-
-event returnTileUUIDandSpace
-{
-	var space : OpenEventSpace 
-	val uid : UUID
-	
-	new (s : OpenEventSpace, u : UUID)
-	{
-		space = s
-		uid = u 
-	}
-}
-
-event IsBlankTileANeighbor
-{ 
-	
-}
 
 event SearchSquareWithBlankTile
 {
 	var squareSpace : Space
 	var squareEmplacement : Integer
+	val squareSearched : Integer
 	
-	new (s : Space, empl : Integer)
+	new (s : Space, empl : Integer, sq : Integer)
 	{
 		squareSpace = s
 		squareEmplacement = empl
+		squareSearched = sq
 	}
 }
 
-event BlankTileIsOnMe
-{
-	var tileOnMe : Boolean
-	
-	new (btiom : Boolean)
-	{ 
-		tileOnMe = btiom
-	}
-}
 
 event AskYourTileToExchangeWithThatSpace 
 {
@@ -119,7 +76,12 @@ event AskYourTileToExchangeWithThatSpace
 
 event AskSquareToSearchBlankTile
 {
+	val squareSearched : Integer
 	
+	new (s : Integer)
+	{
+		squareSearched = s
+	}
 }
 
 event ExchangeWithThatSpace

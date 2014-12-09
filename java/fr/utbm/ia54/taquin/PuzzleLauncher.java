@@ -1,4 +1,4 @@
-package ia54.project.taquin;
+package fr.utbm.ia54.taquin;
 
 public class PuzzleLauncher {
 
