@@ -1,24 +1,18 @@
-package ia54.project.taquin
+package fr.utbm.ia54.taquin.agents
 
+import fr.utbm.ia54.taquin.events.AskMySquareNumber
+import fr.utbm.ia54.taquin.events.AskSquareToSearchBlankTile
+import fr.utbm.ia54.taquin.events.ExchangeWithThatSpace
+import fr.utbm.ia54.taquin.events.NewGame
+import fr.utbm.ia54.taquin.events.SearchSatisfaction
+import fr.utbm.ia54.taquin.events.SendMySquareNumber
 import io.sarl.core.Behaviors
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.ExternalContextAccess
 import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
-//import ia54.project.taquin.PuzzleConstant
 import io.sarl.util.OpenEventSpace
-import io.sarl.util.OpenEventSpaceSpecification
-import java.util.Random
-import java.util.Collection
-import io.sarl.lang.util.SynchronizedSet
-import java.util.UUID
-import io.sarl.lang.core.Space
-import java.util.List
-import java.util.ArrayList
-import io.sarl.lang.core.EventSpace
-import io.sarl.lang.core.EventSpaceSpecification
-import io.sarl.lang.core.EventListener
 
 agent ActiveTile {
     uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
@@ -69,6 +63,12 @@ agent ActiveTile {
 //		tileSquareSpace.emit(evt) //emit the event in the space
 //    	 	
 //    }
+
+	on NewGame
+	{
+		println("Tile " + myNumber + " is dying!")
+		killMe
+	}
 }
 
 agent BlankTile {
@@ -80,6 +80,12 @@ agent BlankTile {
         space.register(asEventListener())
 
         println("Blank tile spawned")
+    }
+    
+    on NewGame
+    {
+    	println("Blank tile is dying!!!")
+    	killMe
     }
     
 }

@@ -1,6 +1,6 @@
-package ia54.project.taquin
+package fr.utbm.ia54.taquin.capacities
 
-import ia54.project.taquin.SharedValues
+import fr.utbm.ia54.taquin.SharedValues
 import java.util.ArrayList
 
 capacity capMatrixManager
