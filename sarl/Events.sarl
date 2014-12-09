@@ -144,3 +144,13 @@ event ExchangeWithThatSpace
 		newSpace = s
 	}	
 }
+
+event NewGame
+{
+	
+}
+
+event waitForNewGame
+{
+	
+}

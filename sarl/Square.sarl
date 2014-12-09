@@ -104,8 +104,9 @@ agent Square {
 					{
 					 	topTile = SharedValues.getMatrix(x, y-1)
 					 	var tileXY = new ArrayList<Integer>() 
-					 	tileXY =  getMatrixXYwithCaseNumber(topTile, puzzleSize )											 						
-						topTileCost = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1)  - (y - 1)) 					 	
+					 	tileXY =  getMatrixXYwithCaseNumber(topTile, puzzleSize )
+					 	//topTileCost = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - (y + 1))										 						
+						//topTileCost = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1)  - (y - 1)) 					 	
 					}
 					
 					//get bottom tile
@@ -231,5 +232,10 @@ agent Square {
 			evt.source = tileSquareSpace.getAddress(getID()) 
 			tileSquareSpace.emit(evt) 
 		}
+	}
+	
+	on NewGame
+	{
+		killMe
 	}
 }

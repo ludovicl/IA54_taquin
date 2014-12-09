@@ -17,13 +17,19 @@ public class Puzzle extends JFrame {
 	private static int FONT_SIZE = 160 / SIZE;
  
 	// Game board
-	private int[][] cells;
-	private JTextField[][] tfCells;
-
- 
+	private static int[][] cells;
+	private static JTextField[][] tfCells;
+	
+	// Interface
+	private static Container cp;
+	private static JButton btnNewGame;
+	private static JTextField txtFldSize;
+	private static JButton btnStart;
+	private static JButton btnStop;
+	
 	/** Constructor to setup the game and the GUI */
 	public Puzzle() {
-		Container cp = getContentPane();
+		cp = getContentPane();
 //		cp.setLayout(new GridLayout(SIZE, SIZE));
 		
 //      SIZE = SharedValues.getSize();
@@ -56,32 +62,30 @@ public class Puzzle extends JFrame {
 		JPanel buttonPanel = new JPanel(new GridLayout(3,3));
 		
 		// Create JButton for "New Game"
-		JButton btnNewGame = new JButton("New Game");
+		btnNewGame = new JButton("New Game");
 		buttonPanel.add(btnNewGame);
 		btnNewGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Link to the new game event
 				// Get the value in txtFldSize, set SharedValues.size and launch a new game
-				System.out.println("You have clicked on 'New Game'");
+				SharedValues.setSize(Integer.parseInt(txtFldSize.getText()));
+				Puzzle.setSIZE( SharedValues.getSize());
+				SharedValues.setPuzzleMatrix(new int[ SharedValues.getSize() ] [ SharedValues.getSize() ]);
+				System.out.println("You have clicked on 'New Game' with a size of " + SharedValues.getSize());
+				dispose();
+				// TODO Link to the new game event
+				SharedValues.setNewGame(true);
 			}
 		});
 		
 		// Create JTextField for "Puzzle Size"
 		JLabel lblSize = new JLabel(" Size: ");
 		buttonPanel.add(lblSize);
-		JTextField txtFldSize = new JTextField(Integer.toString(SharedValues.getSize()));
+		txtFldSize = new JTextField(Integer.toString(SharedValues.getSize()));
 		buttonPanel.add(txtFldSize);
-//		btnStop.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				// TODO Link to the start event
-//				System.out.println("You have clicked on 'Stop'");
-//			}
-//		});
 		
 		// Create JButton for "Start"
-		JButton btnStart = new JButton("Start");
+		btnStart = new JButton("Start");
 		buttonPanel.add(btnStart);
 		btnStart.addActionListener(new ActionListener() {
 			@Override
@@ -100,7 +104,7 @@ public class Puzzle extends JFrame {
 		buttonPanel.add(txtFldMoves);
 		
 		// Create JButton for "Stop"
-		JButton btnStop = new JButton("Stop");
+		btnStop = new JButton("Stop");
 		buttonPanel.add(btnStop);
 		btnStop.addActionListener(new ActionListener() {
 			@Override
@@ -224,4 +228,64 @@ public class Puzzle extends JFrame {
 		return serialVersionUID;
 	}
 
+
+
+	public static JButton getBtnNewGame() {
+		return btnNewGame;
+	}
+
+
+
+	public static void setBtnNewGame(JButton btnNewGame) {
+		Puzzle.btnNewGame = btnNewGame;
+	}
+
+	public static JTextField getTxtFldSize() {
+		return txtFldSize;
+	}
+
+
+
+	public static void setTxtFldSize(JTextField txtFldSize) {
+		Puzzle.txtFldSize = txtFldSize;
+	}
+
+
+
+	public static JButton getBtnStart() {
+		return btnStart;
+	}
+
+
+
+	public static void setBtnStart(JButton btnStart) {
+		Puzzle.btnStart = btnStart;
+	}
+
+
+
+	public static JButton getBtnStop() {
+		return btnStop;
+	}
+
+
+
+	public static void setBtnStop(JButton btnStop) {
+		Puzzle.btnStop = btnStop;
+	}
+
+
+
+	public static Container getCp() {
+		return cp;
+	}
+
+
+
+	public static void setCp(Container cp) {
+		Puzzle.cp = cp;
+	}
+
+	
+	
 }

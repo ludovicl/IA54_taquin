@@ -196,8 +196,23 @@ agent PuzzleCreator {
 		evt.source = startingSpace.getAddress(getID())
 		startingSpace.emit(evt) 
 
-		killMe //puzzle creator die
+		//killMe //puzzle creator die
 
+		var evtWait = new waitForNewGame()
+		evtWait.emit()
+		
 	}
 
+	on waitForNewGame{
+		while(true){
+			if( SharedValues.isNewGame() ){
+				SharedValues.setNewGame(false)
+				var evt = new NewGame()
+				evt.emit()
+				spawn(PuzzleCreator)
+				killMe
+			}
+			Thread.sleep(1000)
+		}
+	}
 }
