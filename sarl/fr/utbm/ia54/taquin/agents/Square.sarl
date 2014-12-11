@@ -24,7 +24,7 @@ import java.util.ArrayList
 
 agent Square { 
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager
-	var placementNumber : Integer
+	var placementNumber : Integer 
 	var tileNumberOneMe : Integer
 	var puzzleSize : Integer
 	var tileSquareSpace : OpenEventSpace // openEvent => tile may be register or unregister from that space
@@ -47,8 +47,8 @@ agent Square {
 		
 		mainSpace.register(asEventListener())
 		
-		tileSquareSpace.register(asEventListener())
-
+		tileSquareSpace.register(asEventListener())				
+	
 	}
 	
 	on AskMySquareNumber  
@@ -84,13 +84,11 @@ agent Square {
 		var rightTileCostToReachBlankTile : Integer = puzzleSize*puzzleSize
 		
 		var xyBlankTile = new ArrayList<Integer>()
-		xyBlankTile = getMatrixXYwithCaseNumber(-1 ,puzzleSize)
-		
+		xyBlankTile = getMatrixXYwithTileNumber(-1, puzzleSize)
+		 
 		var tileXYSearchedSquare = new ArrayList<Integer>()
-		tileXYSearchedSquare = getMatrixXYwithCaseNumber(occurrence.squareSearched ,puzzleSize)
-		
-		
-								
+		tileXYSearchedSquare = getMatrixXYwithCaseNumber(occurrence.squareSearched, puzzleSize)
+										
 		for (var y = 0 ; y < puzzleSize ; y++)
 		{ 
 			for (var x = 0 ; x < puzzleSize ; x++)
@@ -111,11 +109,11 @@ agent Square {
 					 	
 					 	var tileXY = new ArrayList<Integer>() 
 					 	tileXY =  getMatrixXYwithCaseNumber(topTile, puzzleSize )					 						 						 										 						
-						topTileCostToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1)  - (y - 1)) 					 	
-						
-						topTileCostToReachSearchedSquare = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1)  - (y - 1))
-						
-						topTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1)  - (y - 1)) 				
+                        topTileCostToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1)  - (y - 1))
+                        
+                        topTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - x) + Math.abs(tileXYSearchedSquare.get(1)  - (y - 1))
+                        
+                        topTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1)  - (y - 1))
 						 				
 					}
 					
@@ -126,11 +124,11 @@ agent Square {
 
 						var tileXY = new ArrayList<Integer>() 						
 						tileXY =  getMatrixXYwithCaseNumber(bottomTile, puzzleSize )						
-						botTileCostToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - (y + 1)) 
-						
-						botTileCostToReachSearchedSquare = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - (y + 1))
-						
-						botTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1) - (y + 1)) 						 						
+	                    botTileCostToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - (y + 1))
+	                    
+	                    botTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - x) + Math.abs(tileXYSearchedSquare.get(1) - (y + 1))
+	                    
+	                    botTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1) - (y + 1))
 					}
 					
 					//get left tile
@@ -142,7 +140,7 @@ agent Square {
 						tileXY =  getMatrixXYwithCaseNumber(leftTile, puzzleSize )											 												
 						leftTileCostToReachHisCase = Math.abs(tileXY.get(0) - (x - 1)) + Math.abs(tileXY.get(1) - y) 
 						
-						leftTileCostToReachSearchedSquare = Math.abs(tileXY.get(0) - (x - 1)) + Math.abs(tileXY.get(1) - y)
+						leftTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - (x - 1)) + Math.abs(tileXYSearchedSquare.get(1) - y)
 						
 						leftTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - (x - 1)) + Math.abs(xyBlankTile.get(1) - y)											 	
 					}
@@ -156,78 +154,187 @@ agent Square {
 						tileXY =  getMatrixXYwithCaseNumber(rightTile, puzzleSize )											 																		
 						rightTileCostToReachHisCase = Math.abs(tileXY.get(0) - (x + 1)) + Math.abs(tileXY.get(1) - y)
 						
-						rightTileCostToReachSearchedSquare = Math.abs(tileXY.get(0) - (x + 1)) + Math.abs(tileXY.get(1) - y)
+						rightTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - (x + 1)) + Math.abs(tileXYSearchedSquare.get(1) - y)
 						
 						rightTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - (x + 1)) + Math.abs(xyBlankTile.get(1) - y)																		
 					}												
 				}
-			}
+			} 
 		}		
 		
 		var tileToAttack : Integer
 		
+		var topTileWeighting : Integer = 0
+		var botTileWeighting : Integer = 0
+		var leftTileWeighting : Integer = 0
+		var rightTileWeighting : Integer = 0
+		
+		/*SearchedSquare is prioritary 
+		 * Weighting => 3
+		 */
 		if (rightTileCostToReachSearchedSquare <= leftTileCostToReachSearchedSquare 
 			&& rightTileCostToReachSearchedSquare <= topTileCostToReachSearchedSquare
 			&& rightTileCostToReachSearchedSquare <= botTileCostToReachSearchedSquare)
 		{
+			rightTileWeighting = rightTileWeighting + 3
+		}
+		
+		if (botTileCostToReachSearchedSquare <= leftTileCostToReachSearchedSquare
+			&& botTileCostToReachSearchedSquare <= topTileCostToReachSearchedSquare
+			&&  botTileCostToReachSearchedSquare <= rightTileCostToReachSearchedSquare)
+		{
+			botTileWeighting = botTileWeighting + 3
+		}
+		
+		if (topTileCostToReachSearchedSquare <= leftTileCostToReachSearchedSquare
+			&& topTileCostToReachSearchedSquare <= botTileCostToReachSearchedSquare
+			&&  topTileCostToReachSearchedSquare <= rightTileCostToReachSearchedSquare)
+		{
+			topTileWeighting = topTileWeighting + 3			
+		}
+		
+		if (leftTileCostToReachSearchedSquare <= topTileCostToReachSearchedSquare
+			&& topTileCostToReachSearchedSquare <= botTileCostToReachSearchedSquare
+			&& leftTileCostToReachSearchedSquare <= rightTileCostToReachSearchedSquare)
+		{
+			leftTileWeighting = leftTileWeighting + 3
+		}
+		
+		/*Search blank tile is 2d prioritary 
+		 * Weighting => 2
+		 */
+		if (rightTileCostToReachBlankTile <= leftTileCostToReachBlankTile 
+			&& rightTileCostToReachBlankTile <= topTileCostToReachBlankTile
+			&& rightTileCostToReachBlankTile <= botTileCostToReachBlankTile)
+		{
+			rightTileWeighting = rightTileWeighting + 2
+		}
+		
+		if (botTileCostToReachBlankTile <= leftTileCostToReachBlankTile
+			&& botTileCostToReachBlankTile <= topTileCostToReachBlankTile
+			&&  botTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
+		{
+			botTileWeighting = botTileWeighting + 2
+		}
+		
+		if (topTileCostToReachBlankTile <= leftTileCostToReachBlankTile
+			&& topTileCostToReachBlankTile <= botTileCostToReachBlankTile
+			&&  topTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
+		{
+			topTileWeighting = topTileWeighting + 2			
+		}
+		
+		if (leftTileCostToReachBlankTile <= topTileCostToReachBlankTile
+			&& leftTileCostToReachBlankTile <= botTileCostToReachBlankTile
+			&& leftTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
+		{
+			leftTileWeighting = leftTileWeighting + 2
+		}
+		
+		
+		/*Search blank tile is 3th prioritary 
+		 * Weighting => 1
+		 */
+		if (rightTileCostToReachHisCase <= leftTileCostToReachHisCase 
+			&& rightTileCostToReachHisCase <= topTileCostToReachHisCase
+			&& rightTileCostToReachHisCase <= botTileCostToReachHisCase)
+		{
+			rightTileWeighting = rightTileWeighting + 1
+		}
+		
+		if (botTileCostToReachHisCase <= leftTileCostToReachHisCase
+			&& botTileCostToReachHisCase <= topTileCostToReachBlankTile
+			&&  botTileCostToReachHisCase <= rightTileCostToReachHisCase)
+		{
+			botTileWeighting = botTileWeighting + 1
+		}
+		
+		if (topTileCostToReachHisCase <= leftTileCostToReachHisCase
+			&& topTileCostToReachHisCase <= botTileCostToReachHisCase
+			&&  topTileCostToReachHisCase <= rightTileCostToReachHisCase)
+		{
+			topTileWeighting = topTileWeighting + 1			
+		}
+		
+		if (leftTileCostToReachHisCase <= topTileCostToReachHisCase
+			&& leftTileCostToReachHisCase <= botTileCostToReachHisCase
+			&& leftTileCostToReachHisCase <= rightTileCostToReachHisCase)
+		{
+			leftTileWeighting = leftTileWeighting + 1
+		}
+		
+		/*
+		 * attack the tile with the less cost
+		 */
+		if (rightTileWeighting >= leftTileWeighting 
+			&& rightTileWeighting >= topTileWeighting
+			&& rightTileWeighting >= botTileWeighting)
+		{
 			tileToAttack = rightTile
 		}
 		
-		else if (botTileCostToReachSearchedSquare <= leftTileCostToReachSearchedSquare
-			&& botTileCostToReachSearchedSquare <= topTileCostToReachSearchedSquare
-			&&  botTileCostToReachSearchedSquare <= rightTileCostToReachSearchedSquare)
+		if (botTileWeighting >= leftTileWeighting
+			&& botTileWeighting >= topTileWeighting
+			&&  botTileWeighting >= rightTileWeighting)
 		{
 			tileToAttack = bottomTile	
 		}
 		
-		else if (topTileCostToReachSearchedSquare <= leftTileCostToReachSearchedSquare
-			&& topTileCostToReachSearchedSquare <= botTileCostToReachSearchedSquare
-			&&  topTileCostToReachSearchedSquare <= rightTileCostToReachSearchedSquare)
+		if (topTileWeighting >= leftTileWeighting
+			&& topTileWeighting >= botTileWeighting
+			&&  topTileWeighting >= rightTileWeighting)
 		{
 			tileToAttack = topTile	
 		}
 		
-		else if (leftTileCostToReachSearchedSquare <= topTileCostToReachSearchedSquare
-			&& topTileCostToReachSearchedSquare <= botTileCostToReachSearchedSquare
-			&& leftTileCostToReachSearchedSquare <= rightTileCostToReachSearchedSquare)
+		if (leftTileWeighting >= topTileWeighting
+			&& leftTileWeighting >= botTileWeighting
+			&& leftTileWeighting >= rightTileWeighting)
 		{
-			tileToAttack = leftTile	
+			tileToAttack = leftTile
 		}
-		printMatrix(puzzleSize)
 		
+		println(tileToAttack) //debug
 		//Brodcast an event with the tile to move in parameters
-		var evt2 = new SquareWithTileToMove(tileToAttack, occurrence.squareSearched) 
+//		var evt2 = new SquareWithTileToMove(tileToAttack, occurrence.squareSearched)
+		var evt2 = new SearchSquareWithBlankTile(mainSpace,placementNumber, occurrence.squareSearched, tileNumberOneMe, tileToAttack)
+		
 		evt2.source = mainSpace.getAddress(getID())
-		mainSpace.emit(evt2)
+		mainSpace.emit(evt2)		
 	}
 	
 	on SearchSquareWithBlankTile
 	{
-		if (tileNumberOneMe == -1) // TODO : vérifier si ce mouvement n'éloigne pas la tuile de son but
+		if (occurrence.tileToAttack == -1) 
 		{ 
 			var evt = new ExchangeWithThatSpace(tileSquareSpace)
 			evt.source = mainSpace.getAddress(getID())
 			mainSpace.emit(evt)
-			moveTiletoAnotherEmplacement(occurrence.squareEmplacement, -1 ,puzzleSize)	
-						 
+			moveTiletoAnotherEmplacement(occurrence.squareEmplacement, -1 ,puzzleSize)
+			moveTiletoAnotherEmplacement(placementNumber, occurrence.tileNumberEmitter ,puzzleSize)	
+			printMatrix(puzzleSize)
+			
 			var evtMoveBlank = new AskYourTileToExchangeWithThatSpace(tileSquareSpace, placementNumber) 
 			evtMoveBlank.source = mainSpace.getAddress(getID())
 			mainSpace.emit(evtMoveBlank, Scopes.addresses(occurrence.source))//scopes => emit to the emiter
 		}
-		else
+		else if(occurrence.tileToAttack == tileNumberOneMe)
 		{
+			println("Attack : " + occurrence.tileToAttack)
 			var evtMoveBlank = new AskSquareToSearchToAttack(occurrence.squareSearched) 
 			evtMoveBlank.source = mainSpace.getAddress(getID())
-			mainSpace.emit(evtMoveBlank, Scopes.addresses(occurrence.source))//scopes => emit to the emiter	
+			mainSpace.emit(evtMoveBlank)
+//			mainSpace.emit(evtMoveBlank, Scopes.addresses(occurrence.source))//scopes => emit to the emiter	
 		}
+		println("in other ")//debug
 	}
 	
-	on AskSquareToSearchBlankTile 
-	{
-		var evt = new SearchSquareWithBlankTile(mainSpace, placementNumber, occurrence.squareSearched)// placementNumber is used to update the matrix
-		evt.source = mainSpace.getAddress(getID())
-		mainSpace.emit(evt) 
-	}
+	// on AskSquareToSearchBlankTile 
+	// {
+	// 	var evt = new SearchSquareWithBlankTile(mainSpace, placementNumber, occurrence.squareSearched, tileNumberOneMe)// placementNumber is used to update the matrix
+	// 	evt.source = mainSpace.getAddress(getID())
+	// 	mainSpace.emit(evt)
+	// }
 
 	on AskYourTileToExchangeWithThatSpace
 	{ 

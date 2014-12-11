@@ -9,7 +9,8 @@ capacity capMatrixManager
 	def getMatrixXYwithCaseNumber(caseNumber : Integer,  puzzleSize : Integer) : ArrayList<Integer>
 	def getMatrixCaseNumberWithXY(x : Integer, y : Integer,  puzzleSize : Integer) : Integer
 	def moveTiletoAnotherEmplacement(caseNumber : Integer, newTileNumber: Integer, puzzleSize : Integer)
-} 
+	def getMatrixXYwithTileNumber(tileNumber : Integer, puzzleSize : Integer) : ArrayList<Integer>	
+}  
  
 skill matrixManager implements capMatrixManager
 {
@@ -17,7 +18,7 @@ skill matrixManager implements capMatrixManager
 	{ 
 		println ("=========")
 		for (var y = 0 ; y < puzzleSize ; y++)
-		{ 
+		{  
 			for (var x = 0 ; x < puzzleSize ; x++)
 			{
 				print(SharedValues.getMatrix(x,y) + "|" )
@@ -25,6 +26,24 @@ skill matrixManager implements capMatrixManager
 			println("")
 		}
 		println ("=========")		
+	}
+	
+	def getMatrixXYwithTileNumber(tileNumber : Integer, puzzleSize : Integer) : ArrayList<Integer> 
+	{
+		for (var y = 0; y <puzzleSize; y++ )
+		{
+			for (var x = 0; x < puzzleSize; x++)
+			{
+				if (SharedValues.getMatrix(x, y)==tileNumber)
+				{
+					var retVal =  new ArrayList<Integer>()
+					retVal.add(x)
+					retVal.add(y)
+					
+					return retVal
+				}
+			}
+		} 
 	}
 	
 	def getMatrixXYwithCaseNumber(caseNumber : Integer, puzzleSize : Integer) : ArrayList<Integer> 

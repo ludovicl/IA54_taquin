@@ -2,10 +2,9 @@ package fr.utbm.ia54.taquin.events
 
 import io.sarl.lang.core.Space
 import io.sarl.util.OpenEventSpace
-import java.util.UUID
 
-event SearchSatisfaction {
-
+event SearchSatisfaction { 
+ 
 }
 
 event AskMySquareNumber {
@@ -51,12 +50,16 @@ event SearchSquareWithBlankTile
 	var squareSpace : Space
 	var squareEmplacement : Integer
 	val squareSearched : Integer
+	val tileNumberEmitter : Integer
+	var tileToAttack : Integer
 	
-	new (s : Space, empl : Integer, sq : Integer)
+	new (s : Space, empl : Integer, sq : Integer, tileNb : Integer, tileAtk : Integer)
 	{
 		squareSpace = s
-		squareEmplacement = empl
+		squareEmplacement = empl 
 		squareSearched = sq
+        tileNumberEmitter = tileNb
+        tileToAttack = tileAtk
 	}
 }
 
