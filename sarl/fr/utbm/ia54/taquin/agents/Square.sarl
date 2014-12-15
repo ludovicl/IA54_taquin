@@ -21,6 +21,7 @@ import io.sarl.core.Schedules
 import io.sarl.util.OpenEventSpace
 import io.sarl.util.Scopes
 import java.util.ArrayList
+import io.sarl.lang.core.Address
 
 agent Square { 
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager
@@ -28,8 +29,50 @@ agent Square {
 	var tileNumberOneMe : Integer
 	var puzzleSize : Integer
 	var tileSquareSpace : OpenEventSpace // openEvent => tile may be register or unregister from that space
-	var squareSpace = new ArrayList<OpenEventSpace>() // that eventspace will never change
+	var squareSpace = new ArrayList<OpenEventSpace>() // that eventspace will ne	ver change
 	var mainSpace :  OpenEventSpace //this Square is centered in this space 
+	
+	def computeCost(y : Integer, x : Integer) : ArrayList<Integer>
+	{  
+		var tile : Integer
+		var costToReachHisCase : Integer
+		var costToReachSearchedSquare : Integer
+		var costToReachBlankTile : Integer
+						 
+		if (y+1 < puzzleSize)
+		{
+			tile = SharedValues.getMatrix(x, y+1) 
+			
+			var tileXY = new ArrayList<Integer>() 	 					
+			tileXY =  getMatrixXYwithCaseNumber(tile, puzzleSize )	
+			 
+			var tileXYSearchedSquare = new ArrayList<Integer>()			
+			tileXY =  getMatrixXYwithCaseNumber(tile, puzzleSize )	
+			
+			var xyBlankTile = new ArrayList<Integer>()
+			xyBlankTile = getMatrixXYwithCaseNumber(-1, puzzleSize)
+							
+            costToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - y)
+            
+            costToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - x) + Math.abs(tileXYSearchedSquare.get(1) - y )
+            
+            if(tile != -1)
+            {
+           		costToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1) - y )
+            }
+            else
+            {
+            	costToReachBlankTile = 0
+            }            
+		}
+		
+		var returnList = new ArrayList<Integer>()		
+		returnList.add(costToReachHisCase)
+		returnList.add(costToReachSearchedSquare)
+		returnList.add(costToReachBlankTile)
+		
+		return returnList
+	}
 	
 	on Initialize { 
 		setSkill(capMatrixManager, new matrixManager)		
@@ -88,7 +131,12 @@ agent Square {
 		 
 		var tileXYSearchedSquare = new ArrayList<Integer>()
 		tileXYSearchedSquare = getMatrixXYwithCaseNumber(occurrence.squareSearched, puzzleSize)
-										
+		
+		var topTileCost = new ArrayList<Integer>()
+		var botTileCost = new ArrayList<Integer>()
+		var leftTileCost = new ArrayList<Integer>()
+		var rightTileCost = new ArrayList<Integer>()
+		
 		for (var y = 0 ; y < puzzleSize ; y++)
 		{ 
 			for (var x = 0 ; x < puzzleSize ; x++)
@@ -96,70 +144,52 @@ agent Square {
 				
 				//we found the number in the matrix
 				if (tileNumberOneMe == SharedValues.getMatrix(x, y)) 
-				{ 
-//					var xyFinalTilePlacement = new ArrayList<Integer>()			
-//					xyFinalTilePlacement = getMatrixXYwithCaseNumber(placementNumber, puzzleSize)
-					
+				{ 					
 					/*--get the adjacent numbers cost cheking the matrix--*/					
 					
 					//get top tile 
 					if (y-1 >= 0 ) 
 					{
-					 	topTile = SharedValues.getMatrix(x, y-1)
-					 	
-					 	var tileXY = new ArrayList<Integer>() 
-					 	tileXY =  getMatrixXYwithCaseNumber(topTile, puzzleSize )					 						 						 										 						
-                        topTileCostToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1)  - (y - 1))
-                        
-                        topTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - x) + Math.abs(tileXYSearchedSquare.get(1)  - (y - 1))
-                        
-                        topTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1)  - (y - 1))
+						topTileCost = computeCost(x, y-1)
+
+						topTileCostToReachHisCase = rightTileCost.get(0)						
+						topTileCostToReachSearchedSquare = rightTileCost.get(1)
+						topTileCostToReachBlankTile = rightTileCost.get(2)
 						 				
 					}
 					
 					//get bottom tile
 					if (y+1 < puzzleSize)
 					{
-						bottomTile = SharedValues.getMatrix(x, y+1)
-
-						var tileXY = new ArrayList<Integer>() 						
-						tileXY =  getMatrixXYwithCaseNumber(bottomTile, puzzleSize )						
-	                    botTileCostToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - (y + 1))
-	                    
-	                    botTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - x) + Math.abs(tileXYSearchedSquare.get(1) - (y + 1))
-	                    
-	                    botTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1) - (y + 1))
+						botTileCost = computeCost(x, y+1)
+						
+						botTileCostToReachHisCase = rightTileCost.get(0)						
+						botTileCostToReachSearchedSquare = rightTileCost.get(1)
+						botTileCostToReachBlankTile = rightTileCost.get(2)
 					}
 					
 					//get left tile
 					if(x-1 >=0 )
 					{
-						leftTile = SharedValues.getMatrix(x-1, y)
+						leftTileCost = computeCost(x-1, y)
 						
-						var tileXY = new ArrayList<Integer>() 						
-						tileXY =  getMatrixXYwithCaseNumber(leftTile, puzzleSize )											 												
-						leftTileCostToReachHisCase = Math.abs(tileXY.get(0) - (x - 1)) + Math.abs(tileXY.get(1) - y) 
-						
-						leftTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - (x - 1)) + Math.abs(tileXYSearchedSquare.get(1) - y)
-						
-						leftTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - (x - 1)) + Math.abs(xyBlankTile.get(1) - y)											 	
+						leftTileCostToReachHisCase = rightTileCost.get(0)						
+						leftTileCostToReachSearchedSquare = rightTileCost.get(1)
+						leftTileCostToReachBlankTile = rightTileCost.get(2)
 					}
 					
 					//get right tile 
 					if(x+1 < puzzleSize )
 					{
-						rightTile = SharedValues.getMatrix(x + 1, y)
+						rightTileCost = computeCost(x + 1, y)
 
-						var tileXY = new ArrayList<Integer>()					
-						tileXY =  getMatrixXYwithCaseNumber(rightTile, puzzleSize )											 																		
-						rightTileCostToReachHisCase = Math.abs(tileXY.get(0) - (x + 1)) + Math.abs(tileXY.get(1) - y)
+						rightTileCostToReachHisCase = rightTileCost.get(0)						
+						rightTileCostToReachSearchedSquare = rightTileCost.get(1)
+						rightTileCostToReachBlankTile = rightTileCost.get(2)
 						
-						rightTileCostToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - (x + 1)) + Math.abs(tileXYSearchedSquare.get(1) - y)
-						
-						rightTileCostToReachBlankTile = Math.abs(xyBlankTile.get(0) - (x + 1)) + Math.abs(xyBlankTile.get(1) - y)																		
 					}												
 				}
-			} 
+			}
 		}		
 		
 		var tileToAttack : Integer
@@ -294,7 +324,7 @@ agent Square {
 			tileToAttack = leftTile
 		}
 		
-		println(tileToAttack) //debug
+		println("From : "+ tileNumberOneMe+" Attack : " +tileToAttack) //debug
 		//Brodcast an event with the tile to move in parameters
 //		var evt2 = new SquareWithTileToMove(tileToAttack, occurrence.squareSearched)
 		var evt2 = new SearchSquareWithBlankTile(mainSpace,placementNumber, occurrence.squareSearched, tileNumberOneMe, tileToAttack)
@@ -305,6 +335,7 @@ agent Square {
 	
 	on SearchSquareWithBlankTile
 	{
+		println ("dans square " + tileNumberOneMe )
 		if (occurrence.tileToAttack == -1) 
 		{ 
 			var evt = new ExchangeWithThatSpace(tileSquareSpace)
@@ -321,12 +352,16 @@ agent Square {
 		else if(occurrence.tileToAttack == tileNumberOneMe)
 		{
 			println("Attack : " + occurrence.tileToAttack)
-			var evtMoveBlank = new AskSquareToSearchToAttack(occurrence.squareSearched) 
-			evtMoveBlank.source = mainSpace.getAddress(getID())
-			mainSpace.emit(evtMoveBlank)
+			var evt = new AskSquareToSearchToAttack(occurrence.squareSearched) 
+			evt.source = mainSpace.getAddress(getID())
+			mainSpace.emit(evt, Scopes.addresses(mainSpace.getAddress(getID()))) 
 //			mainSpace.emit(evtMoveBlank, Scopes.addresses(occurrence.source))//scopes => emit to the emiter	
 		}
-		println("in other ")//debug
+		else
+		{
+			println("in other, tile number " + tileNumberOneMe)//debug	
+		}
+		
 	}
 	
 	// on AskSquareToSearchBlankTile 
