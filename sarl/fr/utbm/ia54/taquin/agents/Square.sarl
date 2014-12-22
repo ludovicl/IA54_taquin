@@ -22,6 +22,11 @@ import io.sarl.util.OpenEventSpace
 import io.sarl.util.Scopes
 import java.util.ArrayList
 import io.sarl.lang.core.Address
+import java.util.EventListener
+import java.util.UUID
+import com.hazelcast.concurrent.countdownlatch.LatchKey
+import io.sarl.lang.core.Space
+import fr.utbm.ia54.taquin.events.CallBackLastSquaresThatEmit
 
 agent Square { 
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager
@@ -32,37 +37,37 @@ agent Square {
 	var squareSpace = new ArrayList<OpenEventSpace>() // that eventspace will ne	ver change
 	var mainSpace :  OpenEventSpace //this Square is centered in this space 
 	
-	def computeCost(y : Integer, x : Integer) : ArrayList<Integer>
+	def computeCost(x : Integer, y : Integer, squareSearched : Integer) : ArrayList<Integer>
 	{  
 		var tile : Integer
 		var costToReachHisCase : Integer
 		var costToReachSearchedSquare : Integer
 		var costToReachBlankTile : Integer
 						 
-		if (y+1 < puzzleSize)
+		if (y < puzzleSize)
 		{
-			tile = SharedValues.getMatrix(x, y+1) 
+			tile = SharedValues.getMatrix(x, y) 
 			
 			var tileXY = new ArrayList<Integer>() 	 					
 			tileXY =  getMatrixXYwithCaseNumber(tile, puzzleSize )	
 			 
 			var tileXYSearchedSquare = new ArrayList<Integer>()			
-			tileXY =  getMatrixXYwithCaseNumber(tile, puzzleSize )	
+			tileXYSearchedSquare =  getMatrixXYwithCaseNumber(squareSearched, puzzleSize )	
 			
 			var xyBlankTile = new ArrayList<Integer>()
-			xyBlankTile = getMatrixXYwithCaseNumber(-1, puzzleSize)
-							
-            costToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - y)
+			xyBlankTile = getMatrixXYwithTileNumber(-1, puzzleSize)							
             
             costToReachSearchedSquare = Math.abs(tileXYSearchedSquare.get(0) - x) + Math.abs(tileXYSearchedSquare.get(1) - y )
             
             if(tile != -1)
             {
            		costToReachBlankTile = Math.abs(xyBlankTile.get(0) - x) + Math.abs(xyBlankTile.get(1) - y )
+           		costToReachHisCase = Math.abs(tileXY.get(0) - x) + Math.abs(tileXY.get(1) - y)
             }
             else
             {
             	costToReachBlankTile = 0
+            	costToReachHisCase = 0
             }            
 		}
 		
@@ -85,12 +90,12 @@ agent Square {
 		
 		for ( spce : squareSpace)
 		{
-			spce.register(asEventListener())			
+			spce.register(asEventListener())
 		}
 		
 		mainSpace.register(asEventListener())
 		
-		tileSquareSpace.register(asEventListener())				
+		tileSquareSpace.register(asEventListener())		
 	
 	}
 	
@@ -101,14 +106,16 @@ agent Square {
 		tileSquareSpace.emit(evt)
 	}
 	
-	on AskSquareToSearchToAttack
+	on AskSquareToSearchToAttack 
 	{
+		println (occurrence.lastTileAttacked)
+		println (tileNumberOneMe)
 		
 		var topTile : Integer;
 		var rightTile : Integer;
 		var bottomTile : Integer;
 		var leftTile : Integer;
-				
+
 		//initiate with puzzleSize^2 number 
 		//	=>useful if current tile have 3 or less neighbor 
 		var topTileCostToReachHisCase : Integer = puzzleSize*puzzleSize
@@ -150,47 +157,53 @@ agent Square {
 					//get top tile 
 					if (y-1 >= 0 ) 
 					{
-						topTileCost = computeCost(x, y-1)
+						topTileCost = computeCost(x, y-1, occurrence.squareSearched)
 
-						topTileCostToReachHisCase = rightTileCost.get(0)						
-						topTileCostToReachSearchedSquare = rightTileCost.get(1)
-						topTileCostToReachBlankTile = rightTileCost.get(2)
-						 				
+						topTileCostToReachHisCase = topTileCost.get(0)						
+						topTileCostToReachSearchedSquare = topTileCost.get(1)
+						topTileCostToReachBlankTile = topTileCost.get(2)
+						
+						topTile =  SharedValues.getMatrix(x, y-1)						 				
 					}
 					
 					//get bottom tile
 					if (y+1 < puzzleSize)
 					{
-						botTileCost = computeCost(x, y+1)
+						botTileCost = computeCost(x, y+1, occurrence.squareSearched)
 						
-						botTileCostToReachHisCase = rightTileCost.get(0)						
-						botTileCostToReachSearchedSquare = rightTileCost.get(1)
-						botTileCostToReachBlankTile = rightTileCost.get(2)
+						botTileCostToReachHisCase = botTileCost.get(0)						
+						botTileCostToReachSearchedSquare = botTileCost.get(1)
+						botTileCostToReachBlankTile = botTileCost.get(2)
+						
+						bottomTile =  SharedValues.getMatrix(x, y+1)
 					}
 					
 					//get left tile
-					if(x-1 >=0 )
+					if(x-1 >=0 ) 
 					{
-						leftTileCost = computeCost(x-1, y)
+						leftTileCost = computeCost(x-1, y, occurrence.squareSearched)
 						
-						leftTileCostToReachHisCase = rightTileCost.get(0)						
-						leftTileCostToReachSearchedSquare = rightTileCost.get(1)
-						leftTileCostToReachBlankTile = rightTileCost.get(2)
+						leftTileCostToReachHisCase = leftTileCost.get(0)						
+						leftTileCostToReachSearchedSquare = leftTileCost.get(1)
+						leftTileCostToReachBlankTile = leftTileCost.get(2)
+						
+						leftTile =  SharedValues.getMatrix(x-1, y)						
 					}
 					
 					//get right tile 
 					if(x+1 < puzzleSize )
 					{
-						rightTileCost = computeCost(x + 1, y)
+						rightTileCost = computeCost(x + 1, y, occurrence.squareSearched)
 
 						rightTileCostToReachHisCase = rightTileCost.get(0)						
 						rightTileCostToReachSearchedSquare = rightTileCost.get(1)
 						rightTileCostToReachBlankTile = rightTileCost.get(2)
 						
+						rightTile =  SharedValues.getMatrix(x+1, y)												
 					}												
 				}
 			}
-		}		
+		}
 		
 		var tileToAttack : Integer
 		
@@ -237,28 +250,28 @@ agent Square {
 			&& rightTileCostToReachBlankTile <= topTileCostToReachBlankTile
 			&& rightTileCostToReachBlankTile <= botTileCostToReachBlankTile)
 		{
-			rightTileWeighting = rightTileWeighting + 2
+			rightTileWeighting = rightTileWeighting + 4
 		}
 		
 		if (botTileCostToReachBlankTile <= leftTileCostToReachBlankTile
 			&& botTileCostToReachBlankTile <= topTileCostToReachBlankTile
 			&&  botTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
 		{
-			botTileWeighting = botTileWeighting + 2
+			botTileWeighting = botTileWeighting + 4
 		}
 		
 		if (topTileCostToReachBlankTile <= leftTileCostToReachBlankTile
 			&& topTileCostToReachBlankTile <= botTileCostToReachBlankTile
 			&&  topTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
 		{
-			topTileWeighting = topTileWeighting + 2			
+			topTileWeighting = topTileWeighting + 4	
 		}
 		
 		if (leftTileCostToReachBlankTile <= topTileCostToReachBlankTile
 			&& leftTileCostToReachBlankTile <= botTileCostToReachBlankTile
 			&& leftTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
 		{
-			leftTileWeighting = leftTileWeighting + 2
+			leftTileWeighting = leftTileWeighting + 4
 		}
 		
 		
@@ -294,6 +307,30 @@ agent Square {
 		}
 		
 		/*
+		 * Check that we are not in an infinite loop
+		 */
+		if (occurrence.lastTileAttacked.contains(rightTile))
+		{
+			rightTileWeighting = 0
+		}
+		
+		if (occurrence.lastTileAttacked.contains(leftTile))
+		{
+			leftTileWeighting = 0
+		}
+		
+		if (occurrence.lastTileAttacked.contains(bottomTile))
+		{
+			botTileWeighting = 0
+		}
+		
+		if (occurrence.lastTileAttacked.contains(topTile))
+		{
+			topTileWeighting = 0
+		}
+		
+		
+		/*
 		 * attack the tile with the less cost
 		 */
 		if (rightTileWeighting >= leftTileWeighting 
@@ -305,14 +342,14 @@ agent Square {
 		
 		if (botTileWeighting >= leftTileWeighting
 			&& botTileWeighting >= topTileWeighting
-			&&  botTileWeighting >= rightTileWeighting)
+			&&  botTileWeighting >= rightTileWeighting)			
 		{
 			tileToAttack = bottomTile	
 		}
 		
 		if (topTileWeighting >= leftTileWeighting
 			&& topTileWeighting >= botTileWeighting
-			&&  topTileWeighting >= rightTileWeighting)
+			&&  topTileWeighting >= rightTileWeighting)						
 		{
 			tileToAttack = topTile	
 		}
@@ -325,43 +362,68 @@ agent Square {
 		}
 		
 		println("From : "+ tileNumberOneMe+" Attack : " +tileToAttack) //debug
-		//Brodcast an event with the tile to move in parameters
-//		var evt2 = new SquareWithTileToMove(tileToAttack, occurrence.squareSearched)
-		var evt2 = new SearchSquareWithBlankTile(mainSpace,placementNumber, occurrence.squareSearched, tileNumberOneMe, tileToAttack)
+		var lastTilesAttacked = new ArrayList<Integer>(occurrence.lastTileAttacked)
+
+		//todo : vérifier que tilenumberoneme n'est pas deja dans la liste
+		lastTilesAttacked.add(tileNumberOneMe)
 		
+		var evt2 = new SearchSquareWithBlankTile(mainSpace, placementNumber, occurrence.squareSearched, tileNumberOneMe, tileToAttack, lastTilesAttacked) 
+		 
 		evt2.source = mainSpace.getAddress(getID())
-		mainSpace.emit(evt2)		
+		mainSpace.emit(evt2)		  
 	}
 	
-	on SearchSquareWithBlankTile
+	on CallBackLastSquaresThatEmit[occurrence.squareCalled == tileNumberOneMe]
+	{ 
+		// we call last tile and ask here to move 
+		var evtMoveBack = new SearchSquareWithBlankTile(mainSpace, placementNumber, occurrence.squareSearched, tileNumberOneMe, -1, occurrence.lastTileAttacked)
+		mainSpace.emit(evtMoveBack)
+	}
+	
+	
+	on SearchSquareWithBlankTile[occurrence.tileToAttack == tileNumberOneMe]
 	{
-		println ("dans square " + tileNumberOneMe )
-		if (occurrence.tileToAttack == -1) 
-		{ 
+//		println ("dans square " + tileNumberOneMe )
+		if (occurrence.tileToAttack == -1 )
+		{
 			var evt = new ExchangeWithThatSpace(tileSquareSpace)
 			evt.source = mainSpace.getAddress(getID())
-			mainSpace.emit(evt)
-			moveTiletoAnotherEmplacement(occurrence.squareEmplacement, -1 ,puzzleSize)
-			moveTiletoAnotherEmplacement(placementNumber, occurrence.tileNumberEmitter ,puzzleSize)	
+			tileSquareSpace.emit(evt)
+			
+			var blankSquareXY = getMatrixXYwithTileNumber(-1, puzzleSize) 
+			var blankSquare = getMatrixCaseNumberWithXY(blankSquareXY.get(0), blankSquareXY.get(1), puzzleSize) 			
+			
+			moveTiletoAnotherEmplacement(occurrence.squareEmplacement, -1 ,puzzleSize)			
+			
+			moveTiletoAnotherEmplacement(blankSquare, occurrence.tileNumberEmitter ,puzzleSize)
 			printMatrix(puzzleSize)
 			
 			var evtMoveBlank = new AskYourTileToExchangeWithThatSpace(tileSquareSpace, placementNumber) 
 			evtMoveBlank.source = mainSpace.getAddress(getID())
-			mainSpace.emit(evtMoveBlank, Scopes.addresses(occurrence.source))//scopes => emit to the emiter
-		}
-		else if(occurrence.tileToAttack == tileNumberOneMe)
-		{
-			println("Attack : " + occurrence.tileToAttack)
-			var evt = new AskSquareToSearchToAttack(occurrence.squareSearched) 
-			evt.source = mainSpace.getAddress(getID())
-			mainSpace.emit(evt, Scopes.addresses(mainSpace.getAddress(getID()))) 
-//			mainSpace.emit(evtMoveBlank, Scopes.addresses(occurrence.source))//scopes => emit to the emiter	
-		}
-		else
-		{
-			println("in other, tile number " + tileNumberOneMe)//debug	
-		}
+			tileSquareSpace.emit(evtMoveBlank, Scopes.addresses(occurrence.source))//scopes => emit to the emiter
+			
+			//maybe this emit don't have to be here
+			var lastSquareAttacked = new ArrayList<Integer>(occurrence.tileBeforeTheLastTile)
 		
+			var squareToCall = lastSquareAttacked.get(lastSquareAttacked.size() - 2)
+			lastSquareAttacked.remove(lastSquareAttacked.size() - 1)
+			lastSquareAttacked.remove(lastSquareAttacked.size() - 1) 
+			
+			var evtCallBack = new CallBackLastSquaresThatEmit(squareToCall, occurrence.squareSearched, lastSquareAttacked)
+			mainSpace.emit(evtCallBack)
+		}
+		else 
+		{
+			printMatrix(puzzleSize)
+			println("Attack : " + occurrence.tileToAttack)
+			var ad = occurrence.source
+			var evt = new AskSquareToSearchToAttack(occurrence.squareSearched, occurrence.tileBeforeTheLastTile) 
+			evt.source = mainSpace.getAddress(getID())
+
+			var par = mainSpace.participants
+//			mainSpace.emit(evt)
+			mainSpace.emit(evt, Scopes.addresses(mainSpace.getAddress(getID())))
+		}
 	}
 	
 	// on AskSquareToSearchBlankTile 
@@ -378,20 +440,20 @@ agent Square {
 		moveTiletoAnotherEmplacement(occurrence.squareEmplacement, tileNumberOneMe, puzzleSize)
 		
 		evt.source = mainSpace.getAddress(getID())
-		mainSpace.emit(evt)
+		tileSquareSpace.emit(evt)
 	}
 	
-	on SquareWithTileToMove
-	{
-		print (occurrence.tileNumber)
-		if (occurrence.tileNumber == tileNumberOneMe)
-		{
-			var evt = new AskSquareToSearchToAttack(occurrence.squareSearched)
-			evt.source = tileSquareSpace.getAddress(getID()) 
-			tileSquareSpace.emit(evt) 
-		}
-	}
-	
+//	on SquareWithTileToMove
+//	{
+//		print (occurrence.tileNumber)
+//		if (occurrence.tileNumber == tileNumberOneMe)
+//		{
+//			var evt = new AskSquareToSearchToAttack(occurrence.squareSearched, occurrence.lastTileAttacked) 
+//			evt.source = tileSquareSpace.getAddress(getID()) 
+//			tileSquareSpace.emit(evt) 
+//		}
+//	}
+//	
 	on NewGame 
 	{
 		killMe

@@ -14,6 +14,7 @@ import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
 import io.sarl.util.OpenEventSpace
 import fr.utbm.ia54.taquin.events.AskSquareToSearchToAttack
+import java.util.ArrayList
 
 agent ActiveTile {
     uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors
@@ -40,7 +41,8 @@ agent ActiveTile {
     	println("I am tile number " + myNumber + " and my square is " + occurrence.squareNumber)
     	if (occurrence.squareNumber!=myNumber)
     	{
-    		var evt = new AskSquareToSearchToAttack(myNumber) 
+    		var twoLastTilesAttacked = new ArrayList<Integer>()
+    		var evt = new AskSquareToSearchToAttack(myNumber, twoLastTilesAttacked) 
 			evt.source = tileSquareSpace.getAddress(getID())  
 			tileSquareSpace.emit(evt) 
     	}

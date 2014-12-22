@@ -2,14 +2,16 @@ package fr.utbm.ia54.taquin.events
 
 import io.sarl.lang.core.Space
 import io.sarl.util.OpenEventSpace
+import io.sarl.lang.core.Address
+import java.util.UUID
+import java.util.ArrayList
 
 event SearchSatisfaction { 
  
 }
 
 event AskMySquareNumber {
-	
-	
+
 }
 
 event SendMySquareNumber {
@@ -23,10 +25,12 @@ event SendMySquareNumber {
 
 event AskSquareToSearchToAttack{
 	val squareSearched : Integer
-	
-	new (s : Integer)
+	val lastTileAttacked : ArrayList<Integer>
+		
+	new (s : Integer, lta : ArrayList<Integer>)
 	{
 		squareSearched = s
+		lastTileAttacked = lta 
 	}
 }
 
@@ -52,29 +56,30 @@ event SearchSquareWithBlankTile
 	val squareSearched : Integer
 	val tileNumberEmitter : Integer
 	var tileToAttack : Integer
+	var tileBeforeTheLastTile : ArrayList<Integer>
 	
-	new (s : Space, empl : Integer, sq : Integer, tileNb : Integer, tileAtk : Integer)
-	{
+	new (s : Space, empl : Integer, sq : Integer, tileNb : Integer, tileAtk : Integer, tbtlt: ArrayList<Integer>)
+	{ 
 		squareSpace = s
-		squareEmplacement = empl 
+		squareEmplacement = empl  
 		squareSearched = sq
         tileNumberEmitter = tileNb
         tileToAttack = tileAtk
+        tileBeforeTheLastTile = tbtlt
 	}
 }
 
 
 event AskYourTileToExchangeWithThatSpace 
 {
-	var newSpace : OpenEventSpace 
+	var newSpace : OpenEventSpace
 	var squareEmplacement : Integer
-	
+		
 	new (s : OpenEventSpace, emp : Integer)
 	{
 		newSpace = s
 		squareEmplacement = emp
-	}
-	
+	}	
 }
 
 event AskSquareToSearchBlankTile
@@ -84,6 +89,21 @@ event AskSquareToSearchBlankTile
 	new (s : Integer)
 	{
 		squareSearched = s
+	}
+}
+
+event CallBackLastSquaresThatEmit 
+{
+	var squareCalled : Integer 
+	var squareSearched : Integer	
+	var lastTileAttacked : ArrayList<Integer>	
+	
+
+	new (sc : Integer, sq : Integer,  lta : ArrayList<Integer>)
+	{
+		squareCalled = sc
+		lastTileAttacked = lta
+		squareSearched = sq
 	}
 }
 
