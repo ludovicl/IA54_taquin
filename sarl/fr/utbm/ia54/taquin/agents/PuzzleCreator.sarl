@@ -168,7 +168,7 @@ agent PuzzleCreator {
 				
 				var xyVal = new ArrayList<Integer>()
 				xyVal = getMatrixXYwithCaseNumber(i, puzzleSize)
-				SharedValues.setMatrix(xyVal.get(0),xyVal.get(1),-1)
+				SharedValues.setMatrix(xyVal.get(0),xyVal.get(1), -1)
 				
 			}
 			else //spawn an active tile

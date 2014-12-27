@@ -1,11 +1,10 @@
 package fr.utbm.ia54.taquin.agents
 
 import fr.utbm.ia54.taquin.events.AskMySquareNumber
-import fr.utbm.ia54.taquin.events.AskSquareToSearchBlankTile
+import fr.utbm.ia54.taquin.events.StartSearching
 import fr.utbm.ia54.taquin.events.ExchangeWithThatSpace
 import fr.utbm.ia54.taquin.events.NewGame
 import fr.utbm.ia54.taquin.events.SearchSatisfaction
-import fr.utbm.ia54.taquin.events.SendMySquareNumber
 import io.sarl.core.Behaviors
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.ExternalContextAccess
@@ -28,6 +27,8 @@ agent ActiveTile {
         tileSquareSpace.register(asEventListener())
         isSatisfed = false
 
+		println("tile number : " + myNumber + " Space : " + tileSquareSpace )
+		
         println("Active tile spawned with number: " + myNumber)
     }
     
@@ -37,12 +38,12 @@ agent ActiveTile {
 		tileSquareSpace.emit(evt) //emit the event in the space
     }
     
-    on SendMySquareNumber{
+    on StartSearching {
     	println("I am tile number " + myNumber + " and my square is " + occurrence.squareNumber)
     	if (occurrence.squareNumber!=myNumber)
     	{
     		var twoLastTilesAttacked = new ArrayList<Integer>()
-    		var evt = new AskSquareToSearchToAttack(myNumber, twoLastTilesAttacked) 
+    		var evt = new AskSquareToSearchToAttack(myNumber, twoLastTilesAttacked, true) 
 			evt.source = tileSquareSpace.getAddress(getID())  
 			tileSquareSpace.emit(evt) 
     	}
@@ -55,7 +56,9 @@ agent ActiveTile {
     on ExchangeWithThatSpace
     {
     	tileSquareSpace.unregister(asEventListener())
-    	occurrence.newSpace.register(asEventListener())
+    	println ("dans ExchangeWithThatSpace de tile")
+    	tileSquareSpace = occurrence.newSpace
+    	tileSquareSpace.register(asEventListener())
     } 
     
 //    on getMyTileUUIDandSpace
@@ -91,4 +94,11 @@ agent BlankTile {
     	killMe
     }
     
+    on ExchangeWithThatSpace
+    {
+    	space.unregister(asEventListener())
+    	println("dans ExchangeWithThatSpace de blank tile")
+    	space = occurrence.newSpace 
+    	space.register(asEventListener())
+    } 
 }

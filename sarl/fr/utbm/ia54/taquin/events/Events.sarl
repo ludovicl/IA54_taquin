@@ -14,7 +14,7 @@ event AskMySquareNumber {
 
 }
 
-event SendMySquareNumber {
+event StartSearching {
 	val squareNumber : Integer
 	
 	new (nb : Integer)
@@ -26,11 +26,13 @@ event SendMySquareNumber {
 event AskSquareToSearchToAttack{
 	val squareSearched : Integer
 	val lastTileAttacked : ArrayList<Integer>
+	val newSearch : boolean
 		
-	new (s : Integer, lta : ArrayList<Integer>)
+	new (s : Integer, lta : ArrayList<Integer>, ns : boolean)
 	{
 		squareSearched = s
 		lastTileAttacked = lta 
+		newSearch = ns
 	}
 }
 
@@ -51,14 +53,14 @@ event SquareWithTileToMove{
 
 event SearchSquareWithBlankTile
 {
-	var squareSpace : Space
+	var squareSpace : OpenEventSpace
 	var squareEmplacement : Integer
 	val squareSearched : Integer
 	val tileNumberEmitter : Integer
 	var tileToAttack : Integer
 	var tileBeforeTheLastTile : ArrayList<Integer>
 	
-	new (s : Space, empl : Integer, sq : Integer, tileNb : Integer, tileAtk : Integer, tbtlt: ArrayList<Integer>)
+	new (s : OpenEventSpace, empl : Integer, sq : Integer, tileNb : Integer, tileAtk : Integer, tbtlt: ArrayList<Integer>)
 	{ 
 		squareSpace = s
 		squareEmplacement = empl  
@@ -74,11 +76,15 @@ event AskYourTileToExchangeWithThatSpace
 {
 	var newSpace : OpenEventSpace
 	var squareEmplacement : Integer
-		
-	new (s : OpenEventSpace, emp : Integer)
+	var squareSearched : Integer	
+	var lastTileAttacked : ArrayList<Integer>	
+	
+	new (s : OpenEventSpace, emp : Integer, ss : Integer, lta : ArrayList<Integer> )
 	{
 		newSpace = s
 		squareEmplacement = emp
+		squareSearched = ss
+		lastTileAttacked = lta		
 	}	
 }
 
@@ -115,6 +121,19 @@ event ExchangeWithThatSpace
 	{
 		newSpace = s
 	}	
+}
+
+event SearchTileThatSearched
+{
+	var searched : Integer
+	var lastTileAttacked : ArrayList<Integer>	
+	
+	
+	new (s : Integer, lastTile : ArrayList<Integer> )
+	{
+		searched = s
+		lastTileAttacked = lastTile
+	}
 }
 
 event NewGame
