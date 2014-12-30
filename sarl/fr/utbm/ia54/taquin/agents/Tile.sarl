@@ -5,6 +5,7 @@ import fr.utbm.ia54.taquin.events.StartSearching
 import fr.utbm.ia54.taquin.events.ExchangeWithThatSpace
 import fr.utbm.ia54.taquin.events.NewGame
 import fr.utbm.ia54.taquin.events.SearchSatisfaction
+import fr.utbm.ia54.taquin.events.AskSquareStartSearching
 import io.sarl.core.Behaviors
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.ExternalContextAccess
@@ -12,7 +13,7 @@ import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
 import io.sarl.util.OpenEventSpace
-import fr.utbm.ia54.taquin.events.AskSquareToSearchToAttack
+import fr.utbm.ia54.taquin.events.SearchManhatanDistance
 import java.util.ArrayList
 
 agent ActiveTile {
@@ -43,7 +44,8 @@ agent ActiveTile {
     	if (occurrence.squareNumber!=myNumber)
     	{
     		var twoLastTilesAttacked = new ArrayList<Integer>()
-    		var evt = new AskSquareToSearchToAttack(myNumber, twoLastTilesAttacked, true) 
+			var path =new ArrayList<Integer>()
+    		var evt = new AskSquareStartSearching() 
 			evt.source = tileSquareSpace.getAddress(getID())  
 			tileSquareSpace.emit(evt) 
     	}

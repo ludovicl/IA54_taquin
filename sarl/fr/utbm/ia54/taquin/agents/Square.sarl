@@ -1,16 +1,21 @@
 package fr.utbm.ia54.taquin.agents
 
+import fr.utbm.ia54.taquin.CaseCost
 import fr.utbm.ia54.taquin.SharedValues
 import fr.utbm.ia54.taquin.capacities.capMatrixManager
 import fr.utbm.ia54.taquin.capacities.matrixManager
 import fr.utbm.ia54.taquin.events.AskMySquareNumber
-import fr.utbm.ia54.taquin.events.StartSearching
 import fr.utbm.ia54.taquin.events.AskSquareToSearchToAttack
 import fr.utbm.ia54.taquin.events.AskYourTileToExchangeWithThatSpace
+import fr.utbm.ia54.taquin.events.CallBackLastSquaresThatEmit
 import fr.utbm.ia54.taquin.events.ExchangeWithThatSpace
 import fr.utbm.ia54.taquin.events.NewGame
+import fr.utbm.ia54.taquin.events.SearchManhatanDistance
 import fr.utbm.ia54.taquin.events.SearchSquareWithBlankTile
 import fr.utbm.ia54.taquin.events.SearchTileThatSearched
+import fr.utbm.ia54.taquin.events.AskSquareStartSearching
+import fr.utbm.ia54.taquin.events.SendBackManhattanDistance 
+import fr.utbm.ia54.taquin.events.StartSearching
 import io.sarl.core.Behaviors
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.ExternalContextAccess
@@ -20,15 +25,9 @@ import io.sarl.core.Schedules
 import io.sarl.util.OpenEventSpace
 import io.sarl.util.Scopes
 import java.util.ArrayList
-import io.sarl.lang.core.Address
-import java.util.EventListener
-import java.util.UUID
-import com.hazelcast.concurrent.countdownlatch.LatchKey
-import io.sarl.lang.core.Space
-import fr.utbm.ia54.taquin.events.CallBackLastSquaresThatEmit
-import fr.utbm.ia54.taquin.events.SearchSatisfaction
 
 agent Square { 
+	
 	uses Lifecycle, Schedules, DefaultContextInteractions, ExternalContextAccess, Behaviors, capMatrixManager
 	var placementNumber : Integer 
 	var tileNumberOnMe : Integer
@@ -36,6 +35,11 @@ agent Square {
 	var tileSquareSpace : OpenEventSpace // openEvent => tile may be register or unregister from that space
 	var squareSpace = new ArrayList<OpenEventSpace>() // that eventspace will ne	ver change
 	var mainSpace :  OpenEventSpace //this Square is centered in this space 
+	var topRightLeftBotCosts = new ArrayList<CaseCost>() 
+	var costTile1 = new ArrayList <Integer>()
+	var costTile2 = new ArrayList <Integer>()
+	var costTile3 = new ArrayList <Integer>()
+	var costTile4 = new ArrayList <Integer>()
 	
 	def computeCost(x : Integer, y : Integer, squareSearched : Integer) : ArrayList<Integer>
 	{  
@@ -107,6 +111,77 @@ agent Square {
 		evt.source = tileSquareSpace.getAddress(getID())
 		tileSquareSpace.emit(evt)
 	}
+	
+	on AskSquareStartSearching
+	{
+		var path =new ArrayList<Integer>()
+		path.add(tileNumberOnMe)
+		var evt = new SearchManhatanDistance(tileNumberOnMe, 0, 0,false, false, false, null, null, path) 
+		evt.source = tileSquareSpace.getAddress(getID())  
+		tileSquareSpace.emit(evt) 
+	}
+	
+	on SearchManhatanDistance [!occurrence.path.contains(placementNumber)]
+	{
+		var blankTileCost : Integer
+		var tileSearchedCost : Integer 
+		var tileToMoveCost : Integer
+		var isBlankTileFound : Boolean
+		var isSearchedTileFound : Boolean
+		var isTileToMoveFound : Boolean
+		var path = new ArrayList<Integer>(occurrence.path)
+		
+		path.add(placementNumber)
+			
+		
+		if (occurrence.tileToMove == placementNumber && !occurrence.isTileToMoveFound)
+		{
+			isTileToMoveFound = true
+		}
+		else 
+		{
+			isTileToMoveFound = false
+			tileToMoveCost = occurrence.tileToMoveCost + 1		
+		}
+		
+		if (occurrence.tileSearched == placementNumber && !occurrence.isSearchedTileFound)
+		{
+			isSearchedTileFound = true
+		}
+		else
+		{
+			isSearchedTileFound = false
+			tileSearchedCost = occurrence.tileSearchedCost + 1		
+		}
+		
+		if (tileNumberOnMe == -1 && !occurrence.isBlankTileFound)
+		{
+			isBlankTileFound = true
+		}
+		else
+		{
+			isBlankTileFound = false
+			blankTileCost = occurrence.blankTileCost + 1		
+		}
+		
+		if (isBlankTileFound &&
+			isTileToMoveFound && 
+			isSearchedTileFound)
+		{
+			var evtSend = new SendBackManhattanDistance(path,occurrence.tileSearched, placementNumber, 
+													occurrence.blankTileCost, occurrence.tileSearchedCost, 
+													occurrence.tileToMoveCost, occurrence.path)
+			mainSpace.emit(evtSend)
+			
+		}
+		else if (path.size() < puzzleSize*puzzleSize)
+		{
+			var evt = new SearchManhatanDistance(blankTileCost, tileSearchedCost, tileToMoveCost, 
+												isBlankTileFound, isSearchedTileFound,isTileToMoveFound, 
+												occurrence.tileToMove, occurrence.tileSearched, path)
+			mainSpace.emit(evt)
+		} 
+	} 
 	
 	on AskSquareToSearchToAttack
 	{
@@ -254,28 +329,28 @@ agent Square {
 			&& rightTileCostToReachBlankTile <= topTileCostToReachBlankTile
 			&& rightTileCostToReachBlankTile <= botTileCostToReachBlankTile)
 		{
-			rightTileWeighting = rightTileWeighting + 4
+			rightTileWeighting = rightTileWeighting + 6
 		}
 		
 		if (botTileCostToReachBlankTile <= leftTileCostToReachBlankTile
 			&& botTileCostToReachBlankTile <= topTileCostToReachBlankTile
 			&&  botTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
 		{
-			botTileWeighting = botTileWeighting + 4
+			botTileWeighting = botTileWeighting + 6
 		}
 		
 		if (topTileCostToReachBlankTile <= leftTileCostToReachBlankTile
 			&& topTileCostToReachBlankTile <= botTileCostToReachBlankTile
 			&&  topTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
 		{
-			topTileWeighting = topTileWeighting + 4	
+			topTileWeighting = topTileWeighting + 6
 		}
 		
 		if (leftTileCostToReachBlankTile <= topTileCostToReachBlankTile
 			&& leftTileCostToReachBlankTile <= botTileCostToReachBlankTile
 			&& leftTileCostToReachBlankTile <= rightTileCostToReachBlankTile)
 		{
-			leftTileWeighting = leftTileWeighting + 4
+			leftTileWeighting = leftTileWeighting + 6
 		}
 		
 		
@@ -364,10 +439,7 @@ agent Square {
 			{
 				rightTileWeighting = 0
 			}
-		}	
-	
-		
-	
+		}
 		
 		/*
 		 * attack the tile with the most important weight
@@ -405,7 +477,6 @@ agent Square {
 		println("From : "+ tileNumberOnMe+" Attack : " +tileToAttack) //debug
 		var lastTilesAttacked = new ArrayList<Integer>(occurrence.lastTileAttacked)
 
-		//TODO : vérifier que tileNumberOnMe n'est pas deja dans la liste
 		if (!lastTilesAttacked.contains(tileNumberOnMe))
 		{ 
 			lastTilesAttacked.add(tileNumberOnMe)			
@@ -424,7 +495,6 @@ agent Square {
 		evtMoveBack.source = mainSpace.getAddress(getID())
 		mainSpace.emit(evtMoveBack)
 	}
-	
 	
 	on SearchSquareWithBlankTile[occurrence.tileToAttack == tileNumberOnMe]
 	{
@@ -463,12 +533,13 @@ agent Square {
 			
 			//maybe this emit don't have to be here
 		}
-		else 
+		else
 		{
 			printMatrix(puzzleSize)
 			println("Attack : " + occurrence.tileToAttack)
 			var ad = occurrence.source
-			var evt = new AskSquareToSearchToAttack(occurrence.squareSearched, occurrence.tileBeforeTheLastTile, false)
+			var path = new ArrayList<Integer>()
+    		var evt = new SearchManhatanDistance(0, 0, 0,false, false, false, null, null, path) 
 			evt.source = mainSpace.getAddress(getID())
 
 			var par = mainSpace.participants
@@ -477,6 +548,108 @@ agent Square {
 		}
 	}
 	
+	on SendBackManhattanDistance[occurrence.path.contains(placementNumber)]
+	{
+		var path = new ArrayList<Integer>(occurrence.path)
+		path.remove(placementNumber)
+		var tla = new ArrayList<Integer>(occurrence.lastTileAttacked)
+		
+		if (occurrence.tileSearched == tileNumberOnMe)
+		{
+			var nbNeighbors = 0
+			var tile1Cost : Integer
+			
+			if (!costTile1.isEmpty)
+			{
+				nbNeighbors = nbNeighbors+1
+			}
+			if (!costTile2.isEmpty)
+			{
+				nbNeighbors = nbNeighbors+1
+			}
+			if (!costTile3.isEmpty)
+			{
+				nbNeighbors = nbNeighbors+1
+			}
+			if (!costTile4.isEmpty)
+			{
+				nbNeighbors = nbNeighbors+1
+			}
+			
+			if (nbNeighbors >= mainSpace.participants.size) // we receive all the event back
+			{
+				if (costTile1.get(2) <= costTile2.get(2)
+					&& costTile1.get(2) <= costTile3.get(2)
+					&& costTile1.get(2) <= costTile4.get(2))
+				{
+					tla.add(costTile1.get(1))
+					var evtSearch = new SearchSquareWithBlankTile(tileSquareSpace, placementNumber, occurrence.tileSearched, tileNumberOnMe, costTile1.get(1),tla) 
+					mainSpace.emit(evtSearch) 
+				}
+				else if (costTile2.get(2) <= costTile1.get(2)
+						&& costTile2.get(2) <= costTile3.get(2)
+						&& costTile2.get(2) <= costTile4.get(2))
+				{
+					tla.add(costTile2.get(1))
+					var evtSearch = new SearchSquareWithBlankTile(tileSquareSpace, placementNumber, occurrence.tileSearched, tileNumberOnMe, costTile2.get(1),tla) 
+					mainSpace.emit(evtSearch) 
+					
+				}
+				else if (costTile3.get(2) <= costTile1.get(2)
+						&& costTile3.get(2) <= costTile2.get(2)
+						&& costTile3.get(2) <= costTile4.get(2))
+				{
+					tla.add(costTile3.get(1))
+					var evtSearch = new SearchSquareWithBlankTile(tileSquareSpace, placementNumber, occurrence.tileSearched, tileNumberOnMe, costTile3.get(1),tla) 
+					mainSpace.emit(evtSearch) 
+				}
+				else if (costTile4.get(2) <= costTile1.get(2)
+						&& costTile4.get(2) <= costTile2.get(2)
+						&& costTile4.get(2) <= costTile3.get(2))
+				{
+					tla.add(costTile4.get(1))
+					var evtSearch = new SearchSquareWithBlankTile(tileSquareSpace, placementNumber, occurrence.tileSearched, tileNumberOnMe, costTile4.get(1),tla) 
+					mainSpace.emit(evtSearch) 
+				}
+			}
+			else
+			{//TODO : apply a coefficient to each cost
+				if (costTile1.isEmpty)
+				{
+					costTile1.add(placementNumber)
+					costTile1.add(occurrence.tileSearchedCost 
+								+ occurrence.tileToMoveCost
+								+ occurrence.blankTileCost)
+				}
+				else if(costTile2.isEmpty)
+				{
+					costTile2.add(placementNumber)
+					costTile2.add(occurrence.tileSearchedCost 
+								+ occurrence.tileToMoveCost
+								+ occurrence.blankTileCost)
+				}
+				else if(costTile3.isEmpty)
+				{
+					costTile3.add(placementNumber)
+					costTile3.add(occurrence.tileSearchedCost 
+								+ occurrence.tileToMoveCost
+								+ occurrence.blankTileCost)
+				}
+				else if(costTile4.isEmpty)
+				{
+					costTile4.add(placementNumber)
+					costTile4.add(occurrence.tileSearchedCost 
+								+ occurrence.tileToMoveCost
+								+ occurrence.blankTileCost)
+				}
+			}
+		}
+		else
+		{
+			var evt = new SendBackManhattanDistance(path,occurrence.tileSearched, placementNumber, occurrence.blankTileCost,
+									occurrence.tileSearchedCost, occurrence.tileToMoveCost, occurrence.lastTileAttacked)
+		}
+	}
 	// on AskSquareToSearchBlankTile 
 	// {
 	// 	var evt = new SearchSquareWithBlankTile(mainSpace, placementNumber, occurrence.squareSearched, tileNumberOnMe)// placementNumber is used to update the matrix
@@ -526,11 +699,13 @@ agent Square {
 			 
 			//TODO : aller chercher une liste globalele
 			
-		var evtSquare = new AskSquareToSearchToAttack(3,tileToAttack, true)
+		var path = new ArrayList<Integer>()
+    	var evtSquare = new SearchManhatanDistance(0, 0, 0,false, false, false, null, null, path) 
+		
 		evtSquare.source = mainSpace.getAddress(getID())
 		mainSpace.emit(evtSquare, Scopes.addresses(mainSpace.getAddress(getID()))) 
 		
-	 } 
+	 }  
 //	on SquareWithTileToMove
 //	{
 //		print (occurrence.tileNumber)

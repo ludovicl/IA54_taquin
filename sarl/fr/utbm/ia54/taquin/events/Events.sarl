@@ -3,13 +3,13 @@ package fr.utbm.ia54.taquin.events
 import io.sarl.lang.core.Space
 import io.sarl.util.OpenEventSpace
 import io.sarl.lang.core.Address
-import java.util.UUID
+import java.util.UUID 
 import java.util.ArrayList
 
 event SearchSatisfaction { 
  
 }
-
+ 
 event AskMySquareNumber {
 
 }
@@ -33,6 +33,34 @@ event AskSquareToSearchToAttack{
 		squareSearched = s
 		lastTileAttacked = lta 
 		newSearch = ns
+	}
+}
+
+event SearchManhatanDistance 
+{
+	val blankTileCost : Integer
+	val tileSearchedCost : Integer 
+	val tileToMoveCost : Integer
+	val isBlankTileFound : Boolean
+	val isSearchedTileFound : Boolean
+	val isTileToMoveFound : Boolean
+	val tileToMove : Integer
+	val tileSearched : Integer
+	val path : ArrayList<Integer>
+	
+	new (btc : Integer, tsc : Integer, ttmc : Integer,
+		ibtf : Boolean, istf : Boolean,  ittmf : Boolean, 
+		ttm : Integer, ts : Integer, p : ArrayList<Integer>)
+	{
+		blankTileCost = btc 
+		tileSearchedCost = tsc 
+		tileToMoveCost = ttmc
+		isBlankTileFound = ibtf
+		isSearchedTileFound = istf
+		isTileToMoveFound = ittmf
+		tileToMove = ttm
+		tileSearched = ts
+		path = p				
 	}
 }
 
@@ -125,14 +153,40 @@ event ExchangeWithThatSpace
 
 event SearchTileThatSearched
 {
-	var searched : Integer
-	var lastTileAttacked : ArrayList<Integer>	
-	
+	val searched : Integer
+	val lastTileAttacked : ArrayList<Integer>	
 	
 	new (s : Integer, lastTile : ArrayList<Integer> )
 	{
 		searched = s
 		lastTileAttacked = lastTile
+	}
+}
+event AskSquareStartSearching
+{
+	
+}
+
+event SendBackManhattanDistance
+{
+	val path : ArrayList<Integer>
+	val tileToMove : Integer //the tile that emit
+	val tileSearched : Integer
+	val blankTileCost : Integer
+	val tileSearchedCost : Integer 
+	val tileToMoveCost : Integer
+	val lastTileAttacked : ArrayList<Integer>	
+	
+	new (p : ArrayList<Integer>,ttm : Integer,  tsc : Integer, 
+		ttmc : Integer, btc : Integer, ts : Integer, lta : ArrayList<Integer>)
+	{
+		tileToMove = ttm
+		path = p
+		tileSearchedCost = tsc
+		tileToMoveCost = ttmc
+		blankTileCost = btc 
+		tileSearched = ts
+		lastTileAttacked = lta
 	}
 }
 
