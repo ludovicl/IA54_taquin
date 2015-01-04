@@ -175,10 +175,9 @@ event SendBackManhattanDistance
 	val blankTileCost : Integer
 	val tileSearchedCost : Integer 
 	val tileToMoveCost : Integer
-	val lastTileAttacked : ArrayList<Integer>	
 	
 	new (p : ArrayList<Integer>,ttm : Integer,  tsc : Integer, 
-		ttmc : Integer, btc : Integer, ts : Integer, lta : ArrayList<Integer>)
+		ttmc : Integer, btc : Integer, ts : Integer)
 	{
 		tileToMove = ttm
 		path = p
@@ -186,7 +185,6 @@ event SendBackManhattanDistance
 		tileToMoveCost = ttmc
 		blankTileCost = btc 
 		tileSearched = ts
-		lastTileAttacked = lta
 	}
 }
 

@@ -63,15 +63,6 @@ agent ActiveTile {
     	tileSquareSpace.register(asEventListener())
     } 
     
-//    on getMyTileUUIDandSpace
-//    {
-//    	if (occurrence.)
-//    	var evt = new returnTileUUIDandSpace(tileSquareSpace, ) //define the event 
-//		evt.source = tileSquareSpace.getAddress(getID()) //define source 
-//		tileSquareSpace.emit(evt) //emit the event in the space
-//    	 	
-//    }
-
 	on NewGame
 	{
 		println("Tile " + myNumber + " is dying!")
@@ -99,7 +90,6 @@ agent BlankTile {
     on ExchangeWithThatSpace
     {
     	space.unregister(asEventListener())
-    	println("dans ExchangeWithThatSpace de blank tile")
     	space = occurrence.newSpace 
     	space.register(asEventListener())
     } 

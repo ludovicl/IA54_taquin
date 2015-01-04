@@ -35,7 +35,7 @@ agent PuzzleCreator {
   
 		setSkill(capMatrixManager, new matrixManager)
 		  		  
-		//create an arraylist with all tile
+		//create an arraylist with all tiles
 		for (var i = 0; i <= puzzleSize*puzzleSize - 2; i++)
 		{
 			allTileNumbers.add(i)
@@ -79,37 +79,30 @@ agent PuzzleCreator {
 			//in these if we create multiple space with square that are neighbor
 			if(i == 0) //top left corner  
 			{
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
-				mainSquareSpace = spaceSquareCenter.get(i)
-				
+				mainSquareSpace = spaceSquareCenter.get(i)				
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
 			}
 			else if(i == puzzleSize -1) //top right corner
 			{
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				mainSquareSpace = spaceSquareCenter.get(i)
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
 			}
 			else if(i == (puzzleSize * puzzleSize) - puzzleSize) //bottom left corner 
 			{
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				mainSquareSpace = spaceSquareCenter.get(i)
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
 			}
 			else if(i == (puzzleSize * puzzleSize - 1)) // bottom right corner 
 			{
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				mainSquareSpace = spaceSquareCenter.get(i)
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
 			}
 			else if(leftColumn.contains(i)) // left column
-			{  
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
-				
+			{  				
 				mainSquareSpace = spaceSquareCenter.get(i)
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
@@ -117,8 +110,6 @@ agent PuzzleCreator {
 			}
 			else if(rightColumn.contains(i)) //right column 
 			{
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
-				
 				mainSquareSpace = spaceSquareCenter.get(i)
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + puzzleSize))
@@ -126,8 +117,6 @@ agent PuzzleCreator {
 			}
 			else if(i > 0 && i < puzzleSize -1 ) // top line
 			{
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
-				
 				mainSquareSpace = spaceSquareCenter.get(i)				
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1)) 
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
@@ -135,16 +124,13 @@ agent PuzzleCreator {
 			}
 			else if(i < puzzleSize * puzzleSize -1 && i > (puzzleSize * puzzleSize) - puzzleSize) // bottom line
 			{
-//				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				mainSquareSpace = spaceSquareCenter.get(i)
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
 			} 
 			else
 			{
-				//spaceToAddToSquareAgent.add(spaceSquareCenter.get(i))
 				mainSquareSpace = spaceSquareCenter.get(i)
-
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i + 1))				
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - 1))
 				spaceToAddToSquareAgent.add(spaceSquareCenter.get(i - puzzleSize))
@@ -184,7 +170,7 @@ agent PuzzleCreator {
 		}
 
 		// Launch the GUI
-//		PuzzleLauncher.launchInterface()
+		PuzzleLauncher.launchInterface()
 
 		var evt = new SearchSatisfaction()
 		evt.source = startingSpace.getAddress(getID())
