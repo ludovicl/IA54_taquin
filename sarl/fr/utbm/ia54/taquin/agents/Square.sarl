@@ -510,7 +510,6 @@ agent Square {
 	
 	on SearchSquareWithBlankTile[occurrence.tileToAttack == tileNumberOnMe]
 	{
-//		println ("dans square " + tileNumberOnMe )
 		if (occurrence.tileToAttack == -1 && occurrence.tileBeforeTheLastTile.size >= 1)
 		{
 			/* Send an event to the tile to ask here to unregister 
@@ -525,7 +524,7 @@ agent Square {
 			 */
 			 var tileBeforeAttack = occurrence.tileBeforeTheLastTile
 			 tileNumberOnMe = tileBeforeAttack.get(tileBeforeAttack.size() - 1)
-//			
+			
 			var blankSquareXY = getMatrixXYwithTileNumber(-1, puzzleSize) 
 			var blankSquare = getMatrixCaseNumberWithXY(blankSquareXY.get(0), blankSquareXY.get(1), puzzleSize)	
 			
@@ -685,6 +684,7 @@ agent Square {
 			//TODO : aller chercher une liste globale
 			
 			var evtSquare = new SearchTileThatSearched(4, occurrence.lastTileAttacked)
+			evtSquare.source = mainSpace.getAddress(getID())
 			mainSpace.emit(evtSquare) 		
 		}
 	}
@@ -692,11 +692,10 @@ agent Square {
 	 on SearchTileThatSearched[occurrence.searched == tileNumberOnMe]
 	 { 
 			 
-		//TODO : aller chercher une liste globalele
+		//TODO : aller chercher une liste globale
 			
 		var path = new ArrayList<Integer>()
-    	var evtSquare = new SearchManhatanDistance(0, 0, 0,false, false, false, null, null, path) 
-		
+    	var evtSquare = new SearchManhatanDistance(0, 0, 0,false, false, false, null, null, path) 		
 		evtSquare.source = mainSpace.getAddress(getID())
 		mainSpace.emit(evtSquare, Scopes.addresses(mainSpace.getAddress(getID()))) 
 		

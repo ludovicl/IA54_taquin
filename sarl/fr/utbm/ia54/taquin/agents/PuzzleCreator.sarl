@@ -144,7 +144,7 @@ agent PuzzleCreator {
 			if (tileNumber == puzzleSize - 1)
 			{
 				startingSpace = tuileSquareSpace
-				startingSpace.register(asEventListener())		
+				startingSpace.register(asEventListener())	
 			}
 			
 			//spawn blank tile 
@@ -161,7 +161,7 @@ agent PuzzleCreator {
 			{
 				spawn(ActiveTile, tileNumber, tuileSquareSpace)
 				
-				var xyVal = new ArrayList<Integer>()		
+				var xyVal = new ArrayList<Integer>()
 				xyVal = getMatrixXYwithCaseNumber(i, puzzleSize)
 				SharedValues.setMatrix(xyVal.get(0), xyVal.get(1), tileNumber)	
 			}
