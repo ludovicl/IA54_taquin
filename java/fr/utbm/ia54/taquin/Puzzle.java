@@ -13,7 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
- 
+
+// This class is the actual GUI of the program
 public class Puzzle extends JFrame {
    /**
 	 * 
@@ -37,15 +38,9 @@ public class Puzzle extends JFrame {
 	private static JButton btnStart;
 	private static JButton btnStop;
 	
-	/** Constructor to setup the game and the GUI */
+	/* Constructor to setup the game and the GUI */
 	public Puzzle() {
 		cp = getContentPane();
-//		cp.setLayout(new GridLayout(SIZE, SIZE));
-		
-//      SIZE = SharedValues.getSize();
-//      CELL_SIZE = 240 / SIZE; // Cell width/height
-//      CANVAS_SIZE = CELL_SIZE * SIZE;
-//      FONT_SIZE = 80 / SIZE;
 		
 		// New JPanel for the actual puzzle
 		JPanel puzzlePanel = new JPanel(new GridLayout(SIZE, SIZE));
@@ -58,15 +53,13 @@ public class Puzzle extends JFrame {
 			for (int row = 0; row < SIZE; ++row) {  
 				tfCells[row][col] = new JTextField(); // allocate element of array
 				puzzlePanel.add(tfCells[row][col]);  // ContentPane adds JTextField
-//				cp.add(tfCells[row][col]);  // ContentPane adds JTextField
 				// In the agent part of the project the tile values are stored from 0 to 14,
 				// here we want from 1 to 15
 				int number = SharedValues.getMatrix(row, col) + 1;
-				drawTile(number, row, col);
+				fillTile(number, row, col);
 			}
 		}
-		
-		
+
 		
 		// New JPanel for the buttons
 		JPanel buttonPanel = new JPanel(new GridLayout(3,3));
@@ -135,21 +128,21 @@ public class Puzzle extends JFrame {
 	}
 
    
-	
+	// This will only refill the JTextFields and not recreate the whole GUI, it is used to show the user every iteration
 	public void refresh(){
 		for (int row = 0; row < SIZE; ++row) {
 			for (int col = 0; col < SIZE; ++col) {
 				// In the agent part of the project the tile values are stored from 0 to 14,
 				// here we want from 1 to 15
 				int number = SharedValues.getMatrix(row, col) + 1;
-				drawTile(number, row, col);
+				fillTile(number, row, col);
 			}
 		}
 	}
 
-   
-	
-	private void drawTile(int number, int row, int col){
+    
+	// This method fills a JTextField with the correct number and color depending on the SharedValues puzzleMatrix
+    private void fillTile(int number, int row, int col){
 		// Try if blank tile
 		if ( number == 0 ){		// The blank tile number in the SharedValues Matrix is -1 but since we previously added 1 it is now 0
 			tfCells[row][col].setText("");  // empty
@@ -161,7 +154,8 @@ public class Puzzle extends JFrame {
 			if( SharedValues.getMatrix(row, col) == (row + SIZE*col)){
 				tfCells[row][col].setBackground(Color.BLUE);
 			}
-			else{
+            // Default for the other tiles not in their correct places
+            else{
 				tfCells[row][col].setBackground(Color.CYAN);
 			}
 			cells[row][col] = number;
